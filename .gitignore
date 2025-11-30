@@ -1,0 +1,15 @@
+.vscode
+main_test.go
+code-refactoring-test/
+coverage.out
+.DS_Store
+__pycache__
+.pytest_cache
+code-refactoring-tool
+config.test
+api-server
+main
+build-test
+bin/
+app
+.claude
