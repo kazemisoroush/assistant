@@ -143,11 +143,11 @@ func setupLogger(level string) {
 
 // LoadConfig loads and validates configuration from environment variables and AWS
 func LoadConfig() (Config, error) {
-	return LoadConfigWithDependencies(nil)
+	return LoadConfigWithDependencies()
 }
 
 // LoadConfigWithDependencies loads configuration with optional dependency injection for testing
-func LoadConfigWithDependencies(loader *Loader) (Config, error) {
+func LoadConfigWithDependencies() (Config, error) {
 	var cfg Config
 
 	// Load env vars
@@ -174,30 +174,6 @@ func LoadConfigWithDependencies(loader *Loader) (Config, error) {
 		return cfg, fmt.Errorf("failed to load AWS configuration: %w", err)
 	}
 	cfg.AWSConfig = awsCfg
-
-	// Use provided loader or create default one
-	if loader == nil {
-		cfnClient := NewCloudFormationClient(awsCfg)
-		secretsClient := NewSecretsManagerClient(awsCfg)
-		loader = NewLoader(cfnClient, secretsClient)
-	}
-
-	// Only load AWS resources if not using local AI
-	if !cfg.AI.Local.Enabled {
-		// Load values from CloudFormation stack if not already set
-		if cfg.AI.Bedrock.KnowledgeBaseServiceRoleARN == "" || cfg.AI.Bedrock.AgentServiceRoleARN == "" ||
-			cfg.AI.Bedrock.S3BucketName == "" || cfg.AI.Bedrock.RDSPostgres.InstanceARN == "" || cfg.AI.Bedrock.RDSPostgres.SchemaEnsureLambdaARN == "" ||
-			cfg.AI.Bedrock.RDSPostgres.CredentialsSecretARN == "" {
-			if err := loader.LoadStackOutputs(ctx, "AssistantInfra", &cfg); err != nil {
-				return cfg, fmt.Errorf("failed to load stack outputs: %w", err)
-			}
-		}
-
-		// Load database credentials from Secrets Manager if secret ARN is available
-		if err := loader.LoadDatabaseCredentials(ctx, cfg.AI.Bedrock.RDSPostgres.CredentialsSecretARN, &cfg); err != nil {
-			return cfg, fmt.Errorf("failed to load database credentials: %w", err)
-		}
-	}
 
 	return cfg, nil
 }
