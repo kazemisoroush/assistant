@@ -27,6 +27,9 @@ type Config struct {
 
 	// AI configuration (organized by provider)
 	AI AIConfig `envconfig:"AI"`
+
+	// Document storage configuration
+	Documents DocumentsConfig `envconfig:"DOCUMENTS"`
 }
 
 // LocalAIConfig represents the configuration for local AI services
@@ -99,6 +102,19 @@ type GitConfig struct {
 	Token       string `envconfig:"TOKEN" required:"true"`
 	Author      string `envconfig:"AUTHOR" default:"AssistantBot"`
 	Email       string `envconfig:"EMAIL" default:"bot@example.com"`
+}
+
+// DocumentsConfig represents configuration for document storage and processing
+type DocumentsConfig struct {
+	StoragePath string `envconfig:"STORAGE_PATH" default:"./data/documents"`
+}
+
+// VectorStoreConfig represents configuration for a vector store
+type VectorStoreConfig struct {
+	Provider string // "chroma", "pinecone", "bedrock", "local", etc.
+	Endpoint string // Connection endpoint
+	APIKey   string // API key if required
+	Index    string // Index/collection name
 }
 
 // validateRepositoryURL ensures the RepoURL matches the expected GitHub URL pattern

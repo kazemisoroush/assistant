@@ -12,4 +12,6 @@ main
 build-test
 bin/
 app
-.claude
+.claudedata/
+testdata/
+data/
