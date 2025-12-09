@@ -1,3 +1,4 @@
+// Package storage implements storage backends for records.
 package storage
 
 import (

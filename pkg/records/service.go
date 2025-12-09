@@ -1,3 +1,4 @@
+// Package records provides record management functionality.
 package records
 
 import (

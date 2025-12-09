@@ -52,7 +52,7 @@ func extractTermsForEmbedding(text string) map[string]float64 {
 	// Simple tokenization: lowercase and split by whitespace/punctuation
 	text = strings.ToLower(text)
 	words := strings.FieldsFunc(text, func(r rune) bool {
-		return !((r >= 'a' && r <= 'z') || (r >= '0' && r <= '9'))
+		return r < 'a' || r > 'z' && (r < '0' || r > '9')
 	})
 
 	// Calculate term frequencies

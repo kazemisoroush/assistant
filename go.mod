@@ -5,9 +5,8 @@ go 1.24.1
 require (
 	github.com/aws/aws-sdk-go-v2 v1.40.0
 	github.com/aws/aws-sdk-go-v2/config v1.32.2
-	github.com/aws/aws-sdk-go-v2/service/cloudformation v1.71.1
-	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.40.2
 	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/swaggo/swag v1.16.6
 )
 
 require (
@@ -30,10 +29,8 @@ require (
 	github.com/go-openapi/jsonreference v0.19.6 // indirect
 	github.com/go-openapi/spec v0.20.4 // indirect
 	github.com/go-openapi/swag v0.19.15 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
-	github.com/swaggo/swag v1.16.6 // indirect
 	golang.org/x/mod v0.17.0 // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/text v0.21.0 // indirect

@@ -7,6 +7,7 @@ import (
 // RecordType represents the category of record
 type RecordType string
 
+// Record type constants
 const (
 	RecordTypeHealthVisit  RecordType = "health_visit"
 	RecordTypeHealthTest   RecordType = "health_test"

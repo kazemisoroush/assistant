@@ -1,31 +1,31 @@
-# Document Management System
+# Record Management System
 
-A hybrid document storage and retrieval system for personal documents with semantic search capabilities.
+A hybrid record storage and retrieval system for personal records with semantic search capabilities.
 
 ## Architecture
 
 The system uses a **hybrid approach**:
-- **Local JSON storage** for document metadata and content
+- **Local JSON storage** for record metadata and content
 - **In-memory caching** for fast access
 - **Vector store interface** (ready for future AI integration with Ollama/Bedrock)
 - **Flexible metadata** with type-specific structured fields
 
-## Document Types
+## Record Types
 
-Currently supported document types:
+Currently supported record types:
 - `health_visit` - Doctor visit notes
 - `health_test` - Lab results and medical tests
 - `health_lab` - Lab reports
 - `receipt` - Purchase receipts (gas, groceries, etc.)
-- `insurance` - Insurance documents
-- `id` - Identification documents
-- `travel` - Travel-related documents
+- `insurance` - Insurance records
+- `id` - Identification records
+- `travel` - Travel-related records
 - `work_contract` - Employment contracts
-- `tax` - Tax documents
-- `car` - Car-related documents
-- `home` - Home-related documents
-- `visa` - Visa and citizenship documents
-- `other` - Other document types
+- `tax` - Tax records
+- `car` - Car-related records
+- `home` - Home-related records
+- `visa` - Visa and citizenship records
+- `other` - Other record types
 
 ## Quick Start
 
@@ -40,10 +40,10 @@ go build -o bin/docs ./cmd/docs
 ### 2. Set Storage Path (Optional)
 
 ```bash
-export STORAGE_PATH="./data/documents"
+export STORAGE_PATH="./data/records"
 ```
 
-### 3. Ingest Documents
+### 3. Ingest Records
 
 Ingest the sample doctor visit notes:
 
@@ -73,9 +73,9 @@ Ingest gas receipt:
   --metadata '{"vendor":"Shell","amount":60.88,"currency":"USD","category":"petrol","date":"2025-12-03T14:45:00Z"}'
 ```
 
-### 4. Search Documents
+### 4. Search Records
 
-Search for documents containing specific keywords:
+Search for records containing specific keywords:
 
 ```bash
 ./bin/docs search "cough"
@@ -83,34 +83,34 @@ Search for documents containing specific keywords:
 ./bin/docs search "Shell gas"
 ```
 
-### 5. List Documents
+### 5. List Records
 
-List all documents:
+List all records:
 
 ```bash
 ./bin/docs list
 ```
 
-List documents by type:
+List records by type:
 
 ```bash
 ./bin/docs list health_visit
 ./bin/docs list receipt
 ```
 
-### 6. Get Document Details
+### 6. Get Record Details
 
-Get a specific document by ID (use ID from list/search output):
+Get a specific record by ID (use ID from list/search output):
 
 ```bash
-./bin/docs get <document-id>
+./bin/docs get <record-id>
 ```
 
-## Document Structure
+## Record Structure
 
-Each document contains:
+Each record contains:
 - `id` - Unique identifier (UUID)
-- `type` - Document type (see list above)
+- `type` - Record type (see list above)
 - `file_path` - Original file path
 - `file_name` - Original file name
 - `title` - Human-readable title
@@ -152,14 +152,14 @@ Each document contains:
 ### Phase 1: Current ✅
 - Local JSON storage
 - Basic keyword search
-- Document ingestion CLI
+- Record ingestion CLI
 - Type-specific metadata
 
 ### Phase 2: AI Integration (Next)
 - Vector embeddings with Ollama/Bedrock
 - Semantic search
 - Natural language queries
-- Document summarization
+- Record summarization
 
 ### Phase 3: Advanced Features
 - PDF/DOCX/image OCR support
@@ -169,18 +169,18 @@ Each document contains:
 - Web UI
 
 ### Phase 4: Intelligence
-- Relationship mapping (link related documents)
+- Relationship mapping (link related records)
 - Timeline visualization
 - Automated reminders (insurance renewal, follow-ups)
-- Document recommendations
+- Record recommendations
 
 ## Project Structure
 
 ```
-pkg/documents/
-├── types.go              # Document types and metadata structures
+pkg/records/
+├── types.go              # Record types and metadata structures
 ├── service.go            # Service interface
-├── document_service.go   # Service implementation
+├── record_service.go   # Service implementation
 ├── storage/
 │   └── local.go         # Local JSON storage implementation
 └── vectorstore/
@@ -190,28 +190,28 @@ cmd/docs/
 └── main.go              # CLI tool
 
 testdata/
-├── health_visit/        # Sample medical documents
+├── health_visit/        # Sample medical records
 └── receipts/            # Sample receipts
 
-data/documents/          # Storage directory (gitignored)
+data/records/          # Storage directory (gitignored)
 ```
 
 ## Configuration
 
 Environment variables:
-- `STORAGE_PATH` - Path to document storage directory (default: `./data/documents`)
+- `STORAGE_PATH` - Path to record storage directory (default: `./data/records`)
 
 ## Storage Format
 
-Documents are stored as individual JSON files in the storage directory:
+Records are stored as individual JSON files in the storage directory:
 ```
-data/documents/
+data/records/
 ├── 550e8400-e29b-41d4-a716-446655440000.json
 ├── 550e8400-e29b-41d4-a716-446655440001.json
 └── ...
 ```
 
-Each file contains the complete document with all metadata and content.
+Each file contains the complete record with all metadata and content.
 
 ## Example Queries (Future with AI)
 
@@ -220,19 +220,19 @@ Once vector search is integrated, you'll be able to ask:
 - "Show me all medical tests from this year"
 - "How much did I spend on gas this month?"
 - "What did Dr. Johnson prescribe last time?"
-- "Find all documents related to my cough"
+- "Find all records related to my cough"
 
 ## Development
 
-### Add a New Document Type
+### Add a New Record Type
 
-1. Add the type constant in `pkg/documents/types.go`
+1. Add the type constant in `pkg/records/types.go`
 2. Create metadata struct if needed
 3. Update this README
 
 ### Add Vector Search
 
-Implement one of these embedders in `pkg/documents/vectorstore/`:
+Implement one of these embedders in `pkg/records/vectorstore/`:
 - `ollama_embedder.go` - For local Ollama
 - `bedrock_embedder.go` - For AWS Bedrock
 - `chroma_store.go` - For Chroma vector database

@@ -1,3 +1,4 @@
+// Package knowledgebase provides vector search and embedding functionality for records.
 package knowledgebase
 
 import "context"

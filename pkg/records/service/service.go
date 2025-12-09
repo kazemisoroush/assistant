@@ -1,3 +1,4 @@
+// Package records implements the record service.
 package records
 
 import (

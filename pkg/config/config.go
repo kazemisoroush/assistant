@@ -28,8 +28,8 @@ type Config struct {
 	// AI configuration (organized by provider)
 	AI AIConfig `envconfig:"AI"`
 
-	// Document storage configuration
-	Documents DocumentsConfig `envconfig:"DOCUMENTS"`
+	// Record storage configuration
+	Records RecordsConfig `envconfig:"RECORDS"`
 }
 
 // LocalAIConfig represents the configuration for local AI services
@@ -104,9 +104,9 @@ type GitConfig struct {
 	Email       string `envconfig:"EMAIL" default:"bot@example.com"`
 }
 
-// DocumentsConfig represents configuration for document storage and processing
-type DocumentsConfig struct {
-	StoragePath string `envconfig:"STORAGE_PATH" default:"./data/documents"`
+// RecordsConfig represents configuration for record storage and processing
+type RecordsConfig struct {
+	StoragePath string `envconfig:"STORAGE_PATH" default:"./data/records"`
 }
 
 // VectorStoreConfig represents configuration for a vector store
