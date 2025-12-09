@@ -7,20 +7,22 @@ import (
 	"strings"
 
 	"github.com/kazemisoroush/assistant/pkg/records"
+	"github.com/kazemisoroush/assistant/pkg/records/knowledgebase"
 	"github.com/kazemisoroush/assistant/pkg/records/storage"
 )
 
 // RecordService implements the Service interface
 type RecordService struct {
-	storage storage.Storage
-	// vectorStore will be added later for semantic search
-	// vectorStore VectorStore
+	storage     storage.Storage
+	vectorStore knowledgebase.VectorStore // Vector store for semantic search
 }
 
 // NewRecordService creates a new record service
-func NewRecordService(storage storage.Storage) records.Service {
+// vectorStore can be nil if semantic search is not needed
+func NewRecordService(storage storage.Storage, vectorStore knowledgebase.VectorStore) records.Service {
 	return &RecordService{
-		storage: storage,
+		storage:     storage,
+		vectorStore: vectorStore,
 	}
 }
 
@@ -47,20 +49,34 @@ func (s *RecordService) Ingest(ctx context.Context, rec *records.Record) error {
 		return fmt.Errorf("failed to store record: %w", err)
 	}
 
-	// TODO: Index in vector store for semantic search
-	// if s.vectorStore != nil {
-	//     if err := s.vectorStore.Index(ctx, rec); err != nil {
-	//         return fmt.Errorf("failed to index record: %w", err)
-	//     }
-	// }
+	// Index in vector store for semantic search
+	if s.vectorStore != nil {
+		if err := s.vectorStore.Index(ctx, rec); err != nil {
+			return fmt.Errorf("failed to index record: %w", err)
+		}
+	}
 
 	return nil
 }
 
 // Search performs search with optional metadata filters
 func (s *RecordService) Search(ctx context.Context, query string, filters map[string]interface{}, limit int) ([]records.SearchResult, error) {
-	// For now, use basic keyword search from storage
-	// Later this will use vector store for semantic search
+	// Use vector store for semantic search if available
+	if s.vectorStore != nil {
+		results, err := s.vectorStore.Search(ctx, query, limit)
+		if err != nil {
+			return nil, fmt.Errorf("vector search failed: %w", err)
+		}
+
+		// Apply metadata filters if provided
+		if len(filters) > 0 {
+			results = applyFilters(results, filters)
+		}
+
+		return results, nil
+	}
+
+	// Fallback to basic keyword search from storage
 	if localStorage, ok := s.storage.(interface {
 		Search(ctx context.Context, query string, filters map[string]interface{}, limit int) ([]records.SearchResult, error)
 	}); ok {
@@ -90,12 +106,12 @@ func (s *RecordService) Update(ctx context.Context, rec *records.Record) error {
 		return fmt.Errorf("failed to update record: %w", err)
 	}
 
-	// TODO: Update in vector store
-	// if s.vectorStore != nil {
-	//     if err := s.vectorStore.Index(ctx, rec); err != nil {
-	//         return fmt.Errorf("failed to reindex record: %w", err)
-	//     }
-	// }
+	// Update in vector store (reindex with new content)
+	if s.vectorStore != nil {
+		if err := s.vectorStore.Index(ctx, rec); err != nil {
+			return fmt.Errorf("failed to reindex record: %w", err)
+		}
+	}
 
 	return nil
 }
@@ -106,12 +122,12 @@ func (s *RecordService) Delete(ctx context.Context, id string) error {
 		return fmt.Errorf("failed to delete record: %w", err)
 	}
 
-	// TODO: Delete from vector store
-	// if s.vectorStore != nil {
-	//     if err := s.vectorStore.Delete(ctx, id); err != nil {
-	//         return fmt.Errorf("failed to delete from vector store: %w", err)
-	//     }
-	// }
+	// Delete from vector store
+	if s.vectorStore != nil {
+		if err := s.vectorStore.Delete(ctx, id); err != nil {
+			return fmt.Errorf("failed to delete from vector store: %w", err)
+		}
+	}
 
 	return nil
 }
@@ -134,4 +150,41 @@ func NormalizeContent(content string) string {
 	// Normalize line endings
 	content = strings.ReplaceAll(content, "\r\n", "\n")
 	return content
+}
+
+// applyFilters filters search results based on metadata criteria
+func applyFilters(results []records.SearchResult, filters map[string]interface{}) []records.SearchResult {
+	if len(filters) == 0 {
+		return results
+	}
+
+	filtered := make([]records.SearchResult, 0, len(results))
+	for _, result := range results {
+		if matchesFilters(&result.Record, filters) {
+			filtered = append(filtered, result)
+		}
+	}
+	return filtered
+}
+
+// matchesFilters checks if a record matches all filter criteria
+func matchesFilters(rec *records.Record, filters map[string]interface{}) bool {
+	for key, value := range filters {
+		switch key {
+		case "type":
+			if rec.Type != records.RecordType(fmt.Sprint(value)) {
+				return false
+			}
+		default:
+			// Check in metadata
+			if rec.Metadata == nil {
+				return false
+			}
+			metaValue, exists := rec.Metadata[key]
+			if !exists || metaValue != value {
+				return false
+			}
+		}
+	}
+	return true
 }
