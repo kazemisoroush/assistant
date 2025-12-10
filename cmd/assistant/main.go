@@ -65,12 +65,10 @@ func main() {
 func initializeSources(cfg config.Config) []source.Source {
 	var sources []source.Source
 
-	localSource := source.NewLocalSource(
-		"local",
-		cfg.Records.Sources.Local.BasePath,
-		cfg.Records.Sources.Local.Enabled,
-	)
-	sources = append(sources, localSource)
+	if cfg.Records.Sources.Local.Enabled {
+		localSource := source.NewLocalSource(cfg.Records.Sources.Local.BasePath)
+		sources = append(sources, localSource)
+	}
 
 	return sources
 }

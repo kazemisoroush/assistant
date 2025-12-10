@@ -1,3 +1,4 @@
+// Package records provides core types and structures for record management.
 package records
 
 import (

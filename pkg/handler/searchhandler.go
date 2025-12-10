@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kazemisoroush/assistant/pkg/records"
+	service "github.com/kazemisoroush/assistant/pkg/records/service"
 )
 
 // SearchHandler handles searching for records.
 type SearchHandler struct {
-	service records.Service
+	service service.Service
 }
 
 // NewSearchHandler creates a new search handler.
-func NewSearchHandler(service records.Service) Handler {
+func NewSearchHandler(service service.Service) Handler {
 	return &SearchHandler{
 		service: service,
 	}

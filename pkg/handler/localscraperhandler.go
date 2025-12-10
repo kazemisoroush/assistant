@@ -5,18 +5,18 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kazemisoroush/assistant/pkg/records"
+	service "github.com/kazemisoroush/assistant/pkg/records/service"
 	"github.com/kazemisoroush/assistant/pkg/records/source"
 )
 
 // LocalScraperHandler handles scraping records from local sources.
 type LocalScraperHandler struct {
-	service records.Service
+	service service.Service
 	sources []source.Source
 }
 
 // NewLocalScraperHandler creates a new local scraper handler.
-func NewLocalScraperHandler(service records.Service, sources []source.Source) Handler {
+func NewLocalScraperHandler(service service.Service, sources []source.Source) Handler {
 	return &LocalScraperHandler{
 		service: service,
 		sources: sources,
@@ -32,11 +32,6 @@ func (l LocalScraperHandler) Handle(ctx context.Context) {
 	var totalScraped, totalFailed int
 
 	for _, src := range l.sources {
-		if !src.IsEnabled() {
-			fmt.Printf("⏭️  Skipping disabled source: %s\n", src.Name())
-			continue
-		}
-
 		fmt.Printf("📦 Source: %s\n", src.Name())
 
 		recordChan, errChan := src.Scrape(ctx)

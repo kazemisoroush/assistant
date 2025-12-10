@@ -11,15 +11,39 @@ import (
 	"github.com/kazemisoroush/assistant/pkg/records/storage"
 )
 
+// Service defines operations for record management
+//
+//go:generate mockgen -destination=./mocks/mock_service.go -mock_names=Service=MockService -package=mocks . Service
+type Service interface {
+	// Ingest processes and stores a record
+	Ingest(ctx context.Context, rec *records.Record) error
+
+	// Search performs semantic search with optional metadata filters
+	// For now this is basic keyword search, will be enhanced with vector search
+	Search(ctx context.Context, query string, filters map[string]interface{}, limit int) ([]records.SearchResult, error)
+
+	// GetByID retrieves a record by its ID
+	GetByID(ctx context.Context, id string) (*records.Record, error)
+
+	// List returns all records with optional type filter
+	List(ctx context.Context, recType records.RecordType) ([]*records.Record, error)
+
+	// Update updates an existing record
+	Update(ctx context.Context, rec *records.Record) error
+
+	// Delete removes a record
+	Delete(ctx context.Context, id string) error
+}
+
 // RecordService implements the Service interface
 type RecordService struct {
 	storage     storage.Storage
-	vectorStore knowledgebase.VectorStore // Vector store for semantic search
+	vectorStore knowledgebase.VectorStore
 }
 
 // NewRecordService creates a new record service
 // vectorStore can be nil if semantic search is not needed
-func NewRecordService(storage storage.Storage, vectorStore knowledgebase.VectorStore) records.Service {
+func NewRecordService(storage storage.Storage, vectorStore knowledgebase.VectorStore) Service {
 	return &RecordService{
 		storage:     storage,
 		vectorStore: vectorStore,

@@ -41,20 +41,6 @@ func (m *MockSource) EXPECT() *MockSourceMockRecorder {
 	return m.recorder
 }
 
-// IsEnabled mocks base method.
-func (m *MockSource) IsEnabled() bool {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "IsEnabled")
-	ret0, _ := ret[0].(bool)
-	return ret0
-}
-
-// IsEnabled indicates an expected call of IsEnabled.
-func (mr *MockSourceMockRecorder) IsEnabled() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsEnabled", reflect.TypeOf((*MockSource)(nil).IsEnabled))
-}
-
 // Name mocks base method.
 func (m *MockSource) Name() string {
 	m.ctrl.T.Helper()

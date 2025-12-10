@@ -16,9 +16,5 @@ type Source interface {
 
 	// Scrape retrieves records from this source
 	// Returns a channel of records and an error channel
-	// TODO: Why is this returning channels?
 	Scrape(ctx context.Context) (<-chan *records.Record, <-chan error)
-
-	// IsEnabled returns whether this source is enabled
-	IsEnabled() bool
 }
