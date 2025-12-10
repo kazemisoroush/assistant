@@ -6,6 +6,8 @@ import (
 )
 
 // Service defines operations for record management
+//
+//go:generate mockgen -destination=./mocks/mock_service.go -mock_names=Service=MockService -package=mocks . Service
 type Service interface {
 	// Ingest processes and stores a record
 	Ingest(ctx context.Context, rec *Record) error

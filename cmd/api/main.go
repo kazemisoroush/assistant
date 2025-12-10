@@ -6,6 +6,9 @@ import (
 	"log"
 
 	"github.com/kazemisoroush/assistant/pkg/config"
+	"github.com/kazemisoroush/assistant/pkg/records/knowledgebase"
+	recordsvc "github.com/kazemisoroush/assistant/pkg/records/service"
+	"github.com/kazemisoroush/assistant/pkg/records/storage"
 )
 
 // @title Assistant API
@@ -20,5 +23,23 @@ func main() {
 	}
 
 	fmt.Printf("Assistant API starting with log level: %s\n", cfg.LogLevel)
-	fmt.Println("Hello from Assistant API!")
+
+	// Initialize storage
+	localStorage, err := storage.NewLocalStorage(cfg.Records.StoragePath)
+	if err != nil {
+		log.Fatalf("Failed to initialize storage: %v", err)
+	}
+
+	// Initialize vector store (using local implementation for POC)
+	vectorStore := knowledgebase.NewLocalVectorStore()
+
+	// Initialize service
+	recordService := recordsvc.NewRecordService(localStorage, vectorStore)
+
+	// TODO: Setup HTTP server and routes using the service or handlers
+	// For now, just verify initialization
+	_ = recordService
+
+	fmt.Println("Assistant API initialized successfully!")
+	fmt.Println("Service ready for API endpoints")
 }

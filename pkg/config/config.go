@@ -3,11 +3,9 @@ package config
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"os"
-	"regexp"
 	"strings"
 	"time"
 
@@ -18,12 +16,10 @@ import (
 
 // Config represents the configuration for the application
 type Config struct {
-	Git            GitConfig      `envconfig:"GIT"`
-	TimeoutSeconds int            `envconfig:"TIMEOUT_SECONDS" default:"180"`
-	LogLevel       string         `envconfig:"LOG_LEVEL" default:"info"`
-	AWSConfig      aws.Config     // Loaded using AWS SDK, not from env
-	Cognito        CognitoConfig  `envconfig:"COGNITO"`
-	Postgres       PostgresConfig `envconfig:"POSTGRES"`
+	Timeout   time.Duration  `envconfig:"TIMEOUT" default:"180s"`
+	LogLevel  string         `envconfig:"LOG_LEVEL" default:"info"`
+	AWSConfig aws.Config     // Loaded using AWS SDK, not from env
+	Postgres  PostgresConfig `envconfig:"POSTGRES"`
 
 	// AI configuration (organized by provider)
 	AI AIConfig `envconfig:"AI"`
@@ -69,13 +65,6 @@ type RDSPostgres struct {
 	DatabaseName          string `envconfig:"DATABASE_NAME" default:"assistant_db"`
 }
 
-// CognitoConfig represents the configuration for AWS Cognito authentication
-type CognitoConfig struct {
-	UserPoolID string `envconfig:"USER_POOL_ID" required:"true"`
-	ClientID   string `envconfig:"CLIENT_ID" required:"true"`
-	Region     string `envconfig:"REGION" default:"us-east-1"`
-}
-
 // PostgresConfig represents the configuration for PostgreSQL connection
 type PostgresConfig struct {
 	Host     string `envconfig:"HOST" default:"localhost"`
@@ -96,17 +85,23 @@ type DatabaseSecret struct {
 	DbName   string `json:"dbname"`
 }
 
-// GitConfig represents the Git configuration
-type GitConfig struct {
-	CodebaseURL string `envconfig:"CODEBASE_URL"` // Per-request, not required at startup
-	Token       string `envconfig:"TOKEN" required:"true"`
-	Author      string `envconfig:"AUTHOR" default:"AssistantBot"`
-	Email       string `envconfig:"EMAIL" default:"bot@example.com"`
-}
-
 // RecordsConfig represents configuration for record storage and processing
 type RecordsConfig struct {
-	StoragePath string `envconfig:"STORAGE_PATH" default:"./data/records"`
+	// TODO: OK this doesn't belong here it needs to be a separate config in root config
+	// storage should
+	StoragePath string        `envconfig:"STORAGE_PATH" default:"./data/records"`
+	Sources     SourcesConfig `envconfig:"SOURCES"`
+}
+
+// SourcesConfig represents configuration for data sources
+type SourcesConfig struct {
+	Local LocalSourceConfig `envconfig:"LOCAL"`
+}
+
+// LocalSourceConfig represents configuration for local file source
+type LocalSourceConfig struct {
+	Enabled  bool   `envconfig:"ENABLED" default:"true"`
+	BasePath string `envconfig:"BASE_PATH" default:"./testdata"`
 }
 
 // VectorStoreConfig represents configuration for a vector store
@@ -115,20 +110,6 @@ type VectorStoreConfig struct {
 	Endpoint string // Connection endpoint
 	APIKey   string // API key if required
 	Index    string // Index/collection name
-}
-
-// validateRepositoryURL ensures the RepoURL matches the expected GitHub URL pattern
-func validateRepositoryURL(url string) error {
-	// Regex for GitHub repo URL (HTTPS and SSH formats)
-	gitHubURLRegex := `^(https:\/\/github\.com\/[\w-]+\/[\w.-]+(\.git)?|git@github\.com:[\w-]+\/[\w.-]+(\.git)?)$`
-	matched, err := regexp.MatchString(gitHubURLRegex, url)
-	if err != nil {
-		return fmt.Errorf("failed to validate GitHub URL: %w", err)
-	}
-	if !matched {
-		return errors.New("invalid GitHub repository URL format")
-	}
-	return nil
 }
 
 // setupLogger configures slog with JSON output and the specified log level
@@ -174,14 +155,7 @@ func LoadConfigWithDependencies() (Config, error) {
 	// Setup structured logging as early as possible
 	setupLogger(cfg.LogLevel)
 
-	// Validate RepoURL if provided (it's optional at startup, provided per-request)
-	if cfg.Git.CodebaseURL != "" {
-		if err := validateRepositoryURL(cfg.Git.CodebaseURL); err != nil {
-			return cfg, fmt.Errorf("invalid GitHub repository URL: %w", err)
-		}
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.TimeoutSeconds)*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), cfg.Timeout)
 	defer cancel()
 
 	// Load AWS config

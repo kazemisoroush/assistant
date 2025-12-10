@@ -4,6 +4,8 @@ package knowledgebase
 import "context"
 
 // Embedder generates vector embeddings from text
+//
+//go:generate mockgen -destination=./mocks/mock_embedder.go -mock_names=Embedder=MockEmbedder -package=mocks . Embedder
 type Embedder interface {
 	// Embed generates embeddings for text
 	// Returns a vector of floats representing the semantic meaning

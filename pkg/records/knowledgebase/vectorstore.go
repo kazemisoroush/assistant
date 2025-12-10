@@ -8,6 +8,8 @@ import (
 
 // VectorStore defines operations for vector-based record search
 // This is an interface for future implementation with Chroma, Pinecone, or AWS Bedrock
+//
+//go:generate mockgen -destination=./mocks/mock_vectorstore.go -mock_names=VectorStore=MockVectorStore -package=mocks . VectorStore
 type VectorStore interface {
 	// Index adds record embeddings to the vector store
 	Index(ctx context.Context, rec *records.Record) error

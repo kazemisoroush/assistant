@@ -8,7 +8,7 @@ help:
 	@echo "  test        - Run all tests"
 	@echo "  lint        - Run golangci-lint"
 	@echo "  mock        - Generate mocks using go generate"
-	@echo "  build       - Build application binaries (api + docs)"
+	@echo "  build       - Build application binaries (api + assistant CLI)"
 	@echo "  swagger     - Generate Swagger documentation"
 	@echo ""
 	@echo "Docker & Local Development:"
@@ -81,6 +81,9 @@ build:
 	@go build -o bin/api -ldflags="-s -w" ./cmd/api
 	@echo "API binary built at bin/api"
 	@echo "Binary size: $$(du -h bin/api | cut -f1)"
+	@go build -o bin/assistant -ldflags="-s -w" ./cmd/assistant
+	@echo "Assistant CLI binary built at bin/assistant"
+	@echo "Binary size: $$(du -h bin/assistant | cut -f1)"
 	@echo "Build completed."
 
 clean:

@@ -7,6 +7,8 @@ import (
 )
 
 // Storage defines the persistence layer interface
+//
+//go:generate mockgen -destination=./mocks/mock_storage.go -mock_names=Storage=MockStorage -package=mocks . Storage
 type Storage interface {
 	// Store saves a record
 	Store(ctx context.Context, rec *records.Record) error
