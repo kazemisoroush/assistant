@@ -70,16 +70,12 @@ func (l SearchHandler) Handle(ctx context.Context) {
 
 	fmt.Printf("Found %d results:\n\n", len(results))
 
-	for i, result := range results {
+	for _, result := range results {
 		rec := result.Record
-		fmt.Printf("%d. %s\n", i+1, rec.Title)
 		fmt.Printf("   Type: %s\n", rec.Type)
 		fmt.Printf("   ID: %s\n", rec.ID)
 		if result.Score > 0 {
 			fmt.Printf("   Relevance: %.2f\n", result.Score)
-		}
-		if rec.Description != "" {
-			fmt.Printf("   Description: %s\n", rec.Description)
 		}
 
 		// Show snippet of content

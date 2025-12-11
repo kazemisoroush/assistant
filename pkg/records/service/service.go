@@ -59,8 +59,8 @@ func (s *RecordService) Ingest(ctx context.Context, rec *records.Record) error {
 	if rec.Type == "" {
 		return fmt.Errorf("record type is required")
 	}
-	if rec.Content == "" && rec.FilePath == "" {
-		return fmt.Errorf("record must have either content or file path")
+	if rec.Content == "" {
+		return fmt.Errorf("record must have content")
 	}
 
 	// Initialize metadata map if nil

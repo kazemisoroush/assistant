@@ -43,7 +43,7 @@ func (lvs *LocalVectorStore) Index(_ context.Context, rec *records.Record) error
 	}
 
 	// Create a simple term frequency map from record content
-	terms := extractTerms(rec.Content + " " + rec.Title + " " + rec.Description)
+	terms := extractTerms(rec.Content)
 
 	// Create embedding
 	embedding := &RecordEmbedding{

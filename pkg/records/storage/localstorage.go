@@ -188,15 +188,7 @@ func (ls *LocalStorage) Search(_ context.Context, query string, filters map[stri
 func calculateSearchScore(rec *records.Record, queryLower string) float64 {
 	score := 0.0
 	contentLower := strings.ToLower(rec.Content)
-	titleLower := strings.ToLower(rec.Title)
-	descLower := strings.ToLower(rec.Description)
 
-	if strings.Contains(titleLower, queryLower) {
-		score += 0.5
-	}
-	if strings.Contains(descLower, queryLower) {
-		score += 0.3
-	}
 	if strings.Contains(contentLower, queryLower) {
 		score += 0.2
 	}

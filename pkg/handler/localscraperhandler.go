@@ -45,7 +45,7 @@ func (l LocalScraperHandler) Handle(ctx context.Context) {
 				fmt.Fprintf(os.Stderr, "Scrape cancelled: %v\n", ctx.Err())
 				os.Exit(1)
 
-			case rec, ok := <-recordChan:
+			case _, ok := <-recordChan:
 				if !ok {
 					// Channel closed, no more records
 					recordChan = nil
@@ -56,13 +56,7 @@ func (l LocalScraperHandler) Handle(ctx context.Context) {
 					continue
 				}
 
-				// Ingest the record
-				if err := l.service.Ingest(ctx, rec); err != nil {
-					fmt.Fprintf(os.Stderr, "   ❌ Failed to ingest %s: %v\n", rec.Title, err)
-					sourceFailed++
-				} else {
-					sourceScraped++
-				}
+				sourceFailed++
 
 			case err, ok := <-errChan:
 				if !ok {

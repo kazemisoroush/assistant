@@ -11,10 +11,8 @@ func TestLocalVectorStore_Index(t *testing.T) {
 	// Arrange
 	store := NewLocalVectorStore()
 	rec := &records.Record{
-		ID:          "rec1",
-		Title:       "Go Programming",
-		Content:     "Go is a great programming language",
-		Description: "Introduction to Go",
+		ID:      "rec1",
+		Content: "Go is a great programming language",
 	}
 	ctx := context.Background()
 
@@ -31,7 +29,6 @@ func TestLocalVectorStore_Index_MissingID(t *testing.T) {
 	// Arrange
 	store := NewLocalVectorStore()
 	rec := &records.Record{
-		Title:   "Go Programming",
 		Content: "Go is a great programming language",
 	}
 	ctx := context.Background()
@@ -50,7 +47,6 @@ func TestLocalVectorStore_Search(t *testing.T) {
 	store := NewLocalVectorStore()
 	rec := &records.Record{
 		ID:      "rec1",
-		Title:   "Go Programming",
 		Content: "Go is a great programming language for building scalable applications",
 	}
 	ctx := context.Background()
@@ -95,7 +91,6 @@ func TestLocalVectorStore_Delete(t *testing.T) {
 	store := NewLocalVectorStore()
 	rec := &records.Record{
 		ID:      "rec1",
-		Title:   "Test Record",
 		Content: "Test content",
 	}
 	ctx := context.Background()
