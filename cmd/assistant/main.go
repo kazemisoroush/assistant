@@ -49,7 +49,7 @@ func main() {
 	extractor := extractor.NewOCRContentExtractor(typeExtractor)
 
 	// Initialize sources
-	localSource := source.NewLocalSource(extractor)
+	localSource := source.NewLocalSource(extractor, cfg.Sources.Local.BasePath)
 
 	ctx, cancel := context.WithTimeout(context.Background(), cfg.Timeout)
 	defer cancel()

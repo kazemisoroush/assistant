@@ -2,6 +2,7 @@
 package records
 
 import (
+	"slices"
 	"time"
 )
 
@@ -11,12 +12,7 @@ type RecordType string
 // IsValid checks if the RecordType is one of the defined types
 func (rt RecordType) IsValid() bool {
 	validTypes := AllRecordTypes()
-	for _, t := range validTypes {
-		if rt == t {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(validTypes, rt)
 }
 
 // Record type constants

@@ -34,7 +34,7 @@ func (l LocalScraperHandler) Handle(ctx context.Context) {
 	for _, src := range l.sources {
 		fmt.Printf("📦 Source: %s\n", src.Name())
 
-		recordChan, errChan := src.Scrape(ctx, "TODO: specify base path")
+		recordChan, errChan := src.Scrape(ctx)
 		sourceScraped := 0
 		sourceFailed := 0
 

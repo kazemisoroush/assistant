@@ -15,12 +15,14 @@ import (
 // LocalSource reads files from a local directory structure
 type LocalSource struct {
 	extractor extractor.ContentExtractor
+	basePath  string
 }
 
 // NewLocalSource creates a new local file source
-func NewLocalSource(extractor extractor.ContentExtractor) Source {
+func NewLocalSource(extractor extractor.ContentExtractor, basePath string) Source {
 	return &LocalSource{
 		extractor: extractor,
+		basePath:  basePath,
 	}
 }
 
@@ -30,7 +32,7 @@ func (ls *LocalSource) Name() string {
 }
 
 // Scrape reads files from the local directory structure
-func (ls *LocalSource) Scrape(_ context.Context, basePath string) (<-chan records.Record, <-chan error) {
+func (ls *LocalSource) Scrape(_ context.Context) (<-chan records.Record, <-chan error) {
 	recordChan := make(chan records.Record)
 	errChan := make(chan error, 1)
 
@@ -38,7 +40,7 @@ func (ls *LocalSource) Scrape(_ context.Context, basePath string) (<-chan record
 		defer close(recordChan)
 		defer close(errChan)
 
-		err := filepath.WalkDir(basePath, func(path string, d fs.DirEntry, err error) error {
+		err := filepath.WalkDir(ls.basePath, func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}

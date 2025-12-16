@@ -16,5 +16,5 @@ type Source interface {
 
 	// Scrape retrieves records from this source
 	// Returns a channel of records and an error channel
-	Scrape(ctx context.Context, basePath string) (<-chan records.Record, <-chan error)
+	Scrape(ctx context.Context) (<-chan records.Record, <-chan error)
 }
