@@ -7,9 +7,9 @@ import (
 	"github.com/kazemisoroush/assistant/pkg/records"
 )
 
-func TestLocalVectorStore_Index(t *testing.T) {
+func TestLocalVectorStorage_Index(t *testing.T) {
 	// Arrange
-	store := NewLocalVectorStore()
+	store := NewLocalVectorStorage()
 	rec := &records.Record{
 		ID:      "rec1",
 		Content: "Go is a great programming language",
@@ -25,9 +25,9 @@ func TestLocalVectorStore_Index(t *testing.T) {
 	}
 }
 
-func TestLocalVectorStore_Index_MissingID(t *testing.T) {
+func TestLocalVectorStorage_Index_MissingID(t *testing.T) {
 	// Arrange
-	store := NewLocalVectorStore()
+	store := NewLocalVectorStorage()
 	rec := &records.Record{
 		Content: "Go is a great programming language",
 	}
@@ -42,9 +42,9 @@ func TestLocalVectorStore_Index_MissingID(t *testing.T) {
 	}
 }
 
-func TestLocalVectorStore_Search(t *testing.T) {
+func TestLocalVectorStorage_Search(t *testing.T) {
 	// Arrange
-	store := NewLocalVectorStore()
+	store := NewLocalVectorStorage()
 	rec := &records.Record{
 		ID:      "rec1",
 		Content: "Go is a great programming language for building scalable applications",
@@ -69,9 +69,9 @@ func TestLocalVectorStore_Search(t *testing.T) {
 	}
 }
 
-func TestLocalVectorStore_Search_EmptyStore(t *testing.T) {
+func TestLocalVectorStorage_Search_EmptyStore(t *testing.T) {
 	// Arrange
-	store := NewLocalVectorStore()
+	store := NewLocalVectorStorage()
 	ctx := context.Background()
 
 	// Act
@@ -86,9 +86,9 @@ func TestLocalVectorStore_Search_EmptyStore(t *testing.T) {
 	}
 }
 
-func TestLocalVectorStore_Delete(t *testing.T) {
+func TestLocalVectorStorage_Delete(t *testing.T) {
 	// Arrange
-	store := NewLocalVectorStore()
+	store := NewLocalVectorStorage()
 	rec := &records.Record{
 		ID:      "rec1",
 		Content: "Test content",
@@ -116,9 +116,9 @@ func TestLocalVectorStore_Delete(t *testing.T) {
 	}
 }
 
-func TestLocalVectorStore_Delete_NotFound(t *testing.T) {
+func TestLocalVectorStorage_Delete_NotFound(t *testing.T) {
 	// Arrange
-	store := NewLocalVectorStore()
+	store := NewLocalVectorStorage()
 	ctx := context.Background()
 
 	// Act
@@ -130,9 +130,9 @@ func TestLocalVectorStore_Delete_NotFound(t *testing.T) {
 	}
 }
 
-func TestLocalVectorStore_Close(t *testing.T) {
+func TestLocalVectorStorage_Close(t *testing.T) {
 	// Arrange
-	store := NewLocalVectorStore()
+	store := NewLocalVectorStorage()
 
 	// Act
 	err := store.Close()

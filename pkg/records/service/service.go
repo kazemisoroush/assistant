@@ -37,16 +37,16 @@ type Service interface {
 
 // RecordService implements the Service interface
 type RecordService struct {
-	storage     storage.Storage
-	vectorStore knowledgebase.VectorStore
+	storage       storage.Storage
+	vectorStorage knowledgebase.VectorStorage
 }
 
 // NewRecordService creates a new record service
-// vectorStore can be nil if semantic search is not needed
-func NewRecordService(storage storage.Storage, vectorStore knowledgebase.VectorStore) Service {
+// vectorStorage can be nil if semantic search is not needed
+func NewRecordService(storage storage.Storage, vectorStorage knowledgebase.VectorStorage) Service {
 	return &RecordService{
-		storage:     storage,
-		vectorStore: vectorStore,
+		storage:       storage,
+		vectorStorage: vectorStorage,
 	}
 }
 
@@ -74,8 +74,8 @@ func (s *RecordService) Ingest(ctx context.Context, rec *records.Record) error {
 	}
 
 	// Index in vector store for semantic search
-	if s.vectorStore != nil {
-		if err := s.vectorStore.Index(ctx, rec); err != nil {
+	if s.vectorStorage != nil {
+		if err := s.vectorStorage.Index(ctx, rec); err != nil {
 			return fmt.Errorf("failed to index record: %w", err)
 		}
 	}
@@ -86,8 +86,8 @@ func (s *RecordService) Ingest(ctx context.Context, rec *records.Record) error {
 // Search performs search with optional metadata filters
 func (s *RecordService) Search(ctx context.Context, query string, filters map[string]interface{}, limit int) ([]records.SearchResult, error) {
 	// Use vector store for semantic search if available
-	if s.vectorStore != nil {
-		results, err := s.vectorStore.Search(ctx, query, limit)
+	if s.vectorStorage != nil {
+		results, err := s.vectorStorage.Search(ctx, query, limit)
 		if err != nil {
 			return nil, fmt.Errorf("vector search failed: %w", err)
 		}
@@ -131,8 +131,8 @@ func (s *RecordService) Update(ctx context.Context, rec *records.Record) error {
 	}
 
 	// Update in vector store (reindex with new content)
-	if s.vectorStore != nil {
-		if err := s.vectorStore.Index(ctx, rec); err != nil {
+	if s.vectorStorage != nil {
+		if err := s.vectorStorage.Index(ctx, rec); err != nil {
 			return fmt.Errorf("failed to reindex record: %w", err)
 		}
 	}
@@ -147,8 +147,8 @@ func (s *RecordService) Delete(ctx context.Context, id string) error {
 	}
 
 	// Delete from vector store
-	if s.vectorStore != nil {
-		if err := s.vectorStore.Delete(ctx, id); err != nil {
+	if s.vectorStorage != nil {
+		if err := s.vectorStorage.Delete(ctx, id); err != nil {
 			return fmt.Errorf("failed to delete from vector store: %w", err)
 		}
 	}

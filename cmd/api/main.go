@@ -25,16 +25,16 @@ func main() {
 	fmt.Printf("Assistant API starting with log level: %s\n", cfg.LogLevel)
 
 	// Initialize storage
-	localStorage, err := storage.NewLocalStorage(cfg.Records.StoragePath)
+	localStorage, err := storage.NewSQLiteStorage(cfg.SQLitePath)
 	if err != nil {
 		log.Fatalf("Failed to initialize storage: %v", err)
 	}
 
 	// Initialize vector store (using local implementation for POC)
-	vectorStore := knowledgebase.NewLocalVectorStore()
+	vectorStorage := knowledgebase.NewLocalVectorStorage()
 
 	// Initialize service
-	recordService := recordsvc.NewRecordService(localStorage, vectorStore)
+	recordService := recordsvc.NewRecordService(localStorage, vectorStorage)
 
 	// TODO: Setup HTTP server and routes using the service or handlers
 	// For now, just verify initialization

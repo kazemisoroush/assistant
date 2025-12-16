@@ -8,6 +8,17 @@ import (
 // RecordType represents the category of record
 type RecordType string
 
+// IsValid checks if the RecordType is one of the defined types
+func (rt RecordType) IsValid() bool {
+	validTypes := AllRecordTypes()
+	for _, t := range validTypes {
+		if rt == t {
+			return true
+		}
+	}
+	return false
+}
+
 // Record type constants
 const (
 	RecordTypeHealthVisit  RecordType = "health_visit"
@@ -24,6 +35,35 @@ const (
 	RecordTypeVisa         RecordType = "visa"
 	RecordTypeOther        RecordType = "other"
 )
+
+// AllRecordTypes returns a slice of all defined record types.
+func AllRecordTypes() []RecordType {
+	return []RecordType{
+		RecordTypeHealthVisit,
+		RecordTypeHealthTest,
+		RecordTypeHealthLab,
+		RecordTypeReceipt,
+		RecordTypeInsurance,
+		RecordTypeID,
+		RecordTypeTravel,
+		RecordTypeWorkContract,
+		RecordTypeTax,
+		RecordTypeCar,
+		RecordTypeHome,
+		RecordTypeVisa,
+		RecordTypeOther,
+	}
+}
+
+// AllRecordTypesAsStrings returns all record types as string slice.
+func AllRecordTypesAsStrings() []string {
+	types := AllRecordTypes()
+	result := make([]string, len(types))
+	for i, t := range types {
+		result[i] = string(t)
+	}
+	return result
+}
 
 // Record represents a single record with both content and metadata
 type Record struct {

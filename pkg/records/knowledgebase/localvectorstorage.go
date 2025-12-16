@@ -10,9 +10,9 @@ import (
 	"github.com/kazemisoroush/assistant/pkg/records"
 )
 
-// LocalVectorStore is a simple in-memory vector store for POC/development
+// LocalVectorStorage is a simple in-memory vector store for POC/development
 // Uses basic TF-IDF-like scoring for semantic search simulation
-type LocalVectorStore struct {
+type LocalVectorStorage struct {
 	mu         sync.RWMutex
 	embeddings map[string]*RecordEmbedding // recID -> embedding
 }
@@ -25,16 +25,16 @@ type RecordEmbedding struct {
 	Record *records.Record
 }
 
-// NewLocalVectorStore creates a new local vector store instance
-func NewLocalVectorStore() VectorStore {
-	return &LocalVectorStore{
+// NewLocalVectorStorage creates a new local vector store instance
+func NewLocalVectorStorage() VectorStorage {
+	return &LocalVectorStorage{
 		embeddings: make(map[string]*RecordEmbedding),
 	}
 }
 
 // Index adds record embeddings to the vector store
 // For POC, we use a simple bag-of-words approach with TF-IDF-like scoring
-func (lvs *LocalVectorStore) Index(_ context.Context, rec *records.Record) error {
+func (lvs *LocalVectorStorage) Index(_ context.Context, rec *records.Record) error {
 	lvs.mu.Lock()
 	defer lvs.mu.Unlock()
 
@@ -58,7 +58,7 @@ func (lvs *LocalVectorStore) Index(_ context.Context, rec *records.Record) error
 }
 
 // Search performs semantic similarity search using cosine similarity
-func (lvs *LocalVectorStore) Search(_ context.Context, query string, limit int) ([]records.SearchResult, error) {
+func (lvs *LocalVectorStorage) Search(_ context.Context, query string, limit int) ([]records.SearchResult, error) {
 	lvs.mu.RLock()
 	defer lvs.mu.RUnlock()
 
@@ -100,7 +100,7 @@ func (lvs *LocalVectorStore) Search(_ context.Context, query string, limit int) 
 }
 
 // Delete removes record from vector store
-func (lvs *LocalVectorStore) Delete(_ context.Context, recID string) error {
+func (lvs *LocalVectorStorage) Delete(_ context.Context, recID string) error {
 	lvs.mu.Lock()
 	defer lvs.mu.Unlock()
 
@@ -113,7 +113,7 @@ func (lvs *LocalVectorStore) Delete(_ context.Context, recID string) error {
 }
 
 // Close closes the vector store connection (no-op for local store)
-func (lvs *LocalVectorStore) Close() error {
+func (lvs *LocalVectorStorage) Close() error {
 	return nil
 }
 

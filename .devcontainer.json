@@ -21,7 +21,7 @@
   "mounts": [
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,readonly,type=bind,consistency=cached"
   ],
-  "onCreateCommand": "sudo usermod -aG docker ${USER}",
+  "onCreateCommand": "sudo usermod -aG docker ${USER} && sudo apt-get update && sudo apt-get install -y libtesseract-dev libleptonica-dev tesseract-ocr",
   "postCreateCommand": "go install github.com/golang/mock/mockgen@v1.6.0 && go mod tidy && git config --global credential.helper store && chmod 600 ~/.ssh/id_* 2>/dev/null || true",
   "remoteUser": "vscode",
   "customizations": {

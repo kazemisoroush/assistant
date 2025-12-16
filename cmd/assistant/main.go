@@ -4,10 +4,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/kazemisoroush/assistant/pkg/config"
 	"github.com/kazemisoroush/assistant/pkg/handler"
+	"github.com/kazemisoroush/assistant/pkg/records/extractor"
 	"github.com/kazemisoroush/assistant/pkg/records/knowledgebase"
 	recordsvc "github.com/kazemisoroush/assistant/pkg/records/service"
 	"github.com/kazemisoroush/assistant/pkg/records/source"
@@ -25,32 +27,36 @@ func main() {
 	// Load configuration
 	cfg, err := config.LoadConfig()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to load config: %v\n", err)
+		slog.Error("Failed to load configuration", "error", err)
 		os.Exit(1)
 	}
 
 	// Initialize storage
-	localStorage, err := storage.NewLocalStorage(cfg.Records.StoragePath)
+	sqliteStorage, err := storage.NewSQLiteStorage(cfg.SQLitePath)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to initialize storage: %v\n", err)
+		slog.Error("Failed to initialize local storage", "error", err)
 		os.Exit(1)
 	}
 
 	// Initialize vector store (using local implementation for POC)
-	vectorStore := knowledgebase.NewLocalVectorStore()
+	vectorStorage := knowledgebase.NewLocalVectorStorage()
 
 	// Initialize service
-	recordService := recordsvc.NewRecordService(localStorage, vectorStore)
+	recordService := recordsvc.NewRecordService(sqliteStorage, vectorStorage)
+
+	// Extractors
+	typeExtractor := extractor.NewLlamaTypeExtractor(cfg.AI.Ollama.URL, cfg.AI.Ollama.Model)
+	extractor := extractor.NewOCRContentExtractor(typeExtractor)
 
 	// Initialize sources
-	sources := initializeSources(cfg)
+	localSource := source.NewLocalSource(extractor)
 
 	ctx, cancel := context.WithTimeout(context.Background(), cfg.Timeout)
 	defer cancel()
 
 	switch command {
 	case "scrape":
-		handler.NewLocalScraperHandler(recordService, sources).Handle(ctx)
+		handler.NewLocalScraperHandler(recordService, []source.Source{localSource}).Handle(ctx)
 	case "search":
 		handler.NewSearchHandler(recordService).Handle(ctx)
 	case "help", "-h", "--help":
@@ -60,15 +66,4 @@ func main() {
 		handler.NewPrintUsageHandler().Handle(ctx)
 		os.Exit(1)
 	}
-}
-
-func initializeSources(cfg config.Config) []source.Source {
-	var sources []source.Source
-
-	if cfg.Records.Sources.Local.Enabled {
-		localSource := source.NewLocalSource(cfg.Records.Sources.Local.BasePath)
-		sources = append(sources, localSource)
-	}
-
-	return sources
 }

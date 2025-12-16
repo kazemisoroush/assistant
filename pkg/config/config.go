@@ -16,25 +16,23 @@ import (
 
 // Config represents the configuration for the application
 type Config struct {
-	Timeout   time.Duration  `envconfig:"TIMEOUT" default:"180s"`
-	LogLevel  string         `envconfig:"LOG_LEVEL" default:"info"`
-	AWSConfig aws.Config     // Loaded using AWS SDK, not from env
-	Postgres  PostgresConfig `envconfig:"POSTGRES"`
+	Timeout    time.Duration  `envconfig:"TIMEOUT" default:"180s"`
+	LogLevel   string         `envconfig:"LOG_LEVEL" default:"info"`
+	AWSConfig  aws.Config     // Loaded using AWS SDK, not from env
+	Postgres   PostgresConfig `envconfig:"POSTGRES"`
+	SQLitePath string         `envconfig:"SQLITE_PATH" default:"./data/assistant.db"`
 
 	// AI configuration (organized by provider)
 	AI AIConfig `envconfig:"AI"`
 
-	// Record storage configuration
-	Records RecordsConfig `envconfig:"RECORDS"`
+	// Records configuration
+	Sources SourcesConfig `envconfig:"SOURCES"`
 }
 
-// LocalAIConfig represents the configuration for local AI services
-type LocalAIConfig struct {
-	Enabled        bool   `envconfig:"ENABLED" default:"false"`
-	OllamaURL      string `envconfig:"OLLAMA_URL" default:"http://localhost:11434"`
-	Model          string `envconfig:"MODEL" default:"codellama:7b-instruct"`
-	ChromaURL      string `envconfig:"CHROMA_URL" default:"http://localhost:8000"`
-	EmbeddingModel string `envconfig:"EMBEDDING_MODEL" default:"all-MiniLM-L6-v2"`
+// OllamaConfig represents the configuration for local AI services
+type OllamaConfig struct {
+	URL   string `envconfig:"URL" default:"http://localhost:11434"`
+	Model string `envconfig:"MODEL" default:"codellama:7b-instruct"`
 }
 
 // BedrockAIConfig represents the configuration for AWS Bedrock AI services
@@ -53,7 +51,7 @@ type AIConfig struct {
 	DefaultProvider string `envconfig:"DEFAULT_PROVIDER" default:"bedrock"`
 
 	// Provider-specific configurations
-	Local   LocalAIConfig   `envconfig:"LOCAL"`
+	Ollama  OllamaConfig    `envconfig:"OLLAMA"`
 	Bedrock BedrockAIConfig `envconfig:"BEDROCK"`
 }
 
@@ -75,41 +73,16 @@ type PostgresConfig struct {
 	SSLMode  string `envconfig:"SSL_MODE" default:"disable"`
 }
 
-// DatabaseSecret represents the structure of the secret stored in AWS Secrets Manager
-type DatabaseSecret struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Engine   string `json:"engine"`
-	Host     string `json:"host"`
-	Port     int    `json:"port"`
-	DbName   string `json:"dbname"`
-}
-
-// RecordsConfig represents configuration for record storage and processing
-type RecordsConfig struct {
-	// TODO: OK this doesn't belong here it needs to be a separate config in root config
-	// storage should
-	StoragePath string        `envconfig:"STORAGE_PATH" default:"./data/records"`
-	Sources     SourcesConfig `envconfig:"SOURCES"`
-}
-
 // SourcesConfig represents configuration for data sources
 type SourcesConfig struct {
-	Local LocalSourceConfig `envconfig:"LOCAL"`
+	StoragePath string            `envconfig:"STORAGE_PATH" default:"./data/records"`
+	Local       LocalSourceConfig `envconfig:"LOCAL"`
 }
 
 // LocalSourceConfig represents configuration for local file source
 type LocalSourceConfig struct {
 	Enabled  bool   `envconfig:"ENABLED" default:"true"`
 	BasePath string `envconfig:"BASE_PATH" default:"./testdata"`
-}
-
-// VectorStoreConfig represents configuration for a vector store
-type VectorStoreConfig struct {
-	Provider string // "chroma", "pinecone", "bedrock", "local", etc.
-	Endpoint string // Connection endpoint
-	APIKey   string // API key if required
-	Index    string // Index/collection name
 }
 
 // setupLogger configures slog with JSON output and the specified log level
@@ -140,11 +113,6 @@ func setupLogger(level string) {
 
 // LoadConfig loads and validates configuration from environment variables and AWS
 func LoadConfig() (Config, error) {
-	return LoadConfigWithDependencies()
-}
-
-// LoadConfigWithDependencies loads configuration with optional dependency injection for testing
-func LoadConfigWithDependencies() (Config, error) {
 	var cfg Config
 
 	// Load env vars

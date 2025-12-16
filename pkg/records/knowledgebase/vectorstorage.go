@@ -6,11 +6,11 @@ import (
 	"github.com/kazemisoroush/assistant/pkg/records"
 )
 
-// VectorStore defines operations for vector-based record search
+// VectorStorage defines operations for vector-based record search
 // This is an interface for future implementation with Chroma, Pinecone, or AWS Bedrock
 //
-//go:generate mockgen -destination=./mocks/mock_vectorstore.go -mock_names=VectorStore=MockVectorStore -package=mocks . VectorStore
-type VectorStore interface {
+//go:generate mockgen -destination=./mocks/mock_vectorstorage.go -mock_names=VectorStorage=MockVectorStorage -package=mocks . VectorStorage
+type VectorStorage interface {
 	// Index adds record embeddings to the vector store
 	Index(ctx context.Context, rec *records.Record) error
 
@@ -27,5 +27,5 @@ type VectorStore interface {
 // TODO: Implement concrete implementations:
 // - OllamaEmbedder: Use local Ollama for embeddings
 // - BedrockEmbedder: Use AWS Bedrock for embeddings
-// - ChromaVectorStore: Use Chroma for vector storage
-// - LocalVectorStore: Simple in-memory vector store for development
+// - ChromaVectorStorage: Use Chroma for vector storage
+// - LocalVectorStorage: Simple in-memory vector store for development

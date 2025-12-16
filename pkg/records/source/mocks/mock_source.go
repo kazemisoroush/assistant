@@ -56,16 +56,16 @@ func (mr *MockSourceMockRecorder) Name() *gomock.Call {
 }
 
 // Scrape mocks base method.
-func (m *MockSource) Scrape(ctx context.Context) (<-chan *records.Record, <-chan error) {
+func (m *MockSource) Scrape(ctx context.Context, basePath string) (<-chan records.Record, <-chan error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Scrape", ctx)
-	ret0, _ := ret[0].(<-chan *records.Record)
+	ret := m.ctrl.Call(m, "Scrape", ctx, basePath)
+	ret0, _ := ret[0].(<-chan records.Record)
 	ret1, _ := ret[1].(<-chan error)
 	return ret0, ret1
 }
 
 // Scrape indicates an expected call of Scrape.
-func (mr *MockSourceMockRecorder) Scrape(ctx any) *gomock.Call {
+func (mr *MockSourceMockRecorder) Scrape(ctx, basePath any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Scrape", reflect.TypeOf((*MockSource)(nil).Scrape), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Scrape", reflect.TypeOf((*MockSource)(nil).Scrape), ctx, basePath)
 }

@@ -1,5 +1,12 @@
 FROM golang:1.24.1 AS builder
 
+# Install tesseract and leptonica for OCR support
+RUN apt-get update && apt-get install -y \
+    libtesseract-dev \
+    libleptonica-dev \
+    tesseract-ocr \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # Copy go mod files and download dependencies
@@ -15,8 +22,14 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o api-server ./cmd/api/main.
 # Production image
 FROM debian:bullseye-slim AS production
 
-# Install CA certificates and curl for health checks
-RUN apt-get update && apt-get install -y ca-certificates curl && rm -rf /var/lib/apt/lists/*
+# Install CA certificates, curl for health checks, and OCR dependencies
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    curl \
+    libtesseract4 \
+    libleptonica5 \
+    tesseract-ocr \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
