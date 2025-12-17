@@ -24,8 +24,8 @@ func setupTestDB(t *testing.T) (*SQLiteStorage, func()) {
 	return storage, cleanup
 }
 
-func createTestRecord(id string, recType records.RecordType) *records.Record {
-	return &records.Record{
+func createTestRecord(id string, recType records.RecordType) records.Record {
+	return records.Record{
 		ID:        id,
 		Type:      recType,
 		Content:   "test content for " + id,
@@ -117,7 +117,7 @@ func TestList(t *testing.T) {
 	rec2 := createTestRecord("id-2", records.RecordTypeReceipt)
 	rec3 := createTestRecord("id-3", records.RecordTypeHealthVisit)
 
-	for _, rec := range []*records.Record{rec1, rec2, rec3} {
+	for _, rec := range []records.Record{rec1, rec2, rec3} {
 		if err := storage.Store(ctx, rec); err != nil {
 			t.Fatalf("Store failed: %v", err)
 		}
@@ -145,7 +145,7 @@ func TestList_WithFilter(t *testing.T) {
 	rec2 := createTestRecord("id-2", records.RecordTypeReceipt)
 	rec3 := createTestRecord("id-3", records.RecordTypeHealthVisit)
 
-	for _, rec := range []*records.Record{rec1, rec2, rec3} {
+	for _, rec := range []records.Record{rec1, rec2, rec3} {
 		if err := storage.Store(ctx, rec); err != nil {
 			t.Fatalf("Store failed: %v", err)
 		}

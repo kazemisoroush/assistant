@@ -18,7 +18,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		handler.NewPrintUsageHandler().Handle(context.Background())
+		fmt.Fprintf(os.Stderr, "Usage: %s <command>\n", os.Args[0])
 		os.Exit(1)
 	}
 
@@ -56,14 +56,11 @@ func main() {
 
 	switch command {
 	case "scrape":
-		handler.NewLocalScraperHandler(recordService, []source.Source{localSource}).Handle(ctx)
+		_, _ = handler.NewLocalScraperHandler(recordService, []source.Source{localSource}).Handle(ctx, handler.Request{})
 	case "search":
-		handler.NewSearchHandler(recordService).Handle(ctx)
-	case "help", "-h", "--help":
-		handler.NewPrintUsageHandler().Handle(ctx)
+		_, _ = handler.NewSearchHandler(recordService).Handle(ctx, handler.Request{})
 	default:
 		fmt.Fprintf(os.Stderr, "Unknown command: %s\n\n", command)
-		handler.NewPrintUsageHandler().Handle(ctx)
 		os.Exit(1)
 	}
 }

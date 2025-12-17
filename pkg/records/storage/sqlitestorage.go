@@ -57,7 +57,7 @@ func NewSQLiteStorage(dbPath string) (*SQLiteStorage, error) {
 }
 
 // initSchema creates the necessary tables
-func (s *SQLiteStorage) initSchema() error {
+func (s SQLiteStorage) initSchema() error {
 	schema := `
     CREATE TABLE IF NOT EXISTS records (
         id TEXT PRIMARY KEY,
@@ -77,7 +77,7 @@ func (s *SQLiteStorage) initSchema() error {
 }
 
 // Store saves a record
-func (s *SQLiteStorage) Store(ctx context.Context, rec *records.Record) error {
+func (s SQLiteStorage) Store(ctx context.Context, rec records.Record) error {
 	metadata, err := json.Marshal(rec.Metadata)
 	if err != nil {
 		return fmt.Errorf("failed to marshal metadata: %w", err)
@@ -104,7 +104,7 @@ func (s *SQLiteStorage) Store(ctx context.Context, rec *records.Record) error {
 }
 
 // Get retrieves a record by ID
-func (s *SQLiteStorage) Get(ctx context.Context, id string) (*records.Record, error) {
+func (s SQLiteStorage) Get(ctx context.Context, id string) (records.Record, error) {
 	query := `
         SELECT id, type, content, metadata, created_at, updated_at
         FROM records
@@ -123,21 +123,21 @@ func (s *SQLiteStorage) Get(ctx context.Context, id string) (*records.Record, er
 		&rec.UpdatedAt,
 	)
 	if err == sql.ErrNoRows {
-		return nil, fmt.Errorf("record not found: %s", id)
+		return records.Record{}, fmt.Errorf("record not found: %s", id)
 	}
 	if err != nil {
-		return nil, fmt.Errorf("failed to get record: %w", err)
+		return records.Record{}, fmt.Errorf("failed to get record: %w", err)
 	}
 
 	if err := json.Unmarshal([]byte(metadataJSON), &rec.Metadata); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal metadata: %w", err)
+		return records.Record{}, fmt.Errorf("failed to unmarshal metadata: %w", err)
 	}
 
-	return &rec, nil
+	return rec, nil
 }
 
 // List returns all records with optional type filter
-func (s *SQLiteStorage) List(ctx context.Context, recType records.RecordType) ([]*records.Record, error) {
+func (s SQLiteStorage) List(ctx context.Context, recType records.RecordType) ([]records.Record, error) {
 	var query string
 	var args []interface{}
 
@@ -167,7 +167,7 @@ func (s *SQLiteStorage) List(ctx context.Context, recType records.RecordType) ([
 		}
 	}()
 
-	var recs []*records.Record
+	var recs []records.Record
 	for rows.Next() {
 		var rec records.Record
 		var metadataJSON string
@@ -187,7 +187,7 @@ func (s *SQLiteStorage) List(ctx context.Context, recType records.RecordType) ([
 			return nil, fmt.Errorf("failed to unmarshal metadata: %w", err)
 		}
 
-		recs = append(recs, &rec)
+		recs = append(recs, rec)
 	}
 
 	if err := rows.Err(); err != nil {
@@ -198,7 +198,7 @@ func (s *SQLiteStorage) List(ctx context.Context, recType records.RecordType) ([
 }
 
 // Update updates an existing record
-func (s *SQLiteStorage) Update(ctx context.Context, rec *records.Record) error {
+func (s SQLiteStorage) Update(ctx context.Context, rec records.Record) error {
 	metadata, err := json.Marshal(rec.Metadata)
 	if err != nil {
 		return fmt.Errorf("failed to marshal metadata: %w", err)
@@ -233,7 +233,7 @@ func (s *SQLiteStorage) Update(ctx context.Context, rec *records.Record) error {
 }
 
 // Delete removes a record
-func (s *SQLiteStorage) Delete(ctx context.Context, id string) error {
+func (s SQLiteStorage) Delete(ctx context.Context, id string) error {
 	query := `DELETE FROM records WHERE id = ?`
 
 	result, err := s.db.ExecContext(ctx, query, id)
@@ -253,6 +253,6 @@ func (s *SQLiteStorage) Delete(ctx context.Context, id string) error {
 }
 
 // Close closes the database connection
-func (s *SQLiteStorage) Close() error {
+func (s SQLiteStorage) Close() error {
 	return s.db.Close()
 }

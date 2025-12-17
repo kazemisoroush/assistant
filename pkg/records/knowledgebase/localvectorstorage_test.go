@@ -10,7 +10,7 @@ import (
 func TestLocalVectorStorage_Index(t *testing.T) {
 	// Arrange
 	store := NewLocalVectorStorage()
-	rec := &records.Record{
+	rec := records.Record{
 		ID:      "rec1",
 		Content: "Go is a great programming language",
 	}
@@ -28,7 +28,7 @@ func TestLocalVectorStorage_Index(t *testing.T) {
 func TestLocalVectorStorage_Index_MissingID(t *testing.T) {
 	// Arrange
 	store := NewLocalVectorStorage()
-	rec := &records.Record{
+	rec := records.Record{
 		Content: "Go is a great programming language",
 	}
 	ctx := context.Background()
@@ -45,7 +45,7 @@ func TestLocalVectorStorage_Index_MissingID(t *testing.T) {
 func TestLocalVectorStorage_Search(t *testing.T) {
 	// Arrange
 	store := NewLocalVectorStorage()
-	rec := &records.Record{
+	rec := records.Record{
 		ID:      "rec1",
 		Content: "Go is a great programming language for building scalable applications",
 	}
@@ -89,7 +89,7 @@ func TestLocalVectorStorage_Search_EmptyStore(t *testing.T) {
 func TestLocalVectorStorage_Delete(t *testing.T) {
 	// Arrange
 	store := NewLocalVectorStorage()
-	rec := &records.Record{
+	rec := records.Record{
 		ID:      "rec1",
 		Content: "Test content",
 	}

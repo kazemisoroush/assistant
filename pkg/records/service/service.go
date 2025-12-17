@@ -4,7 +4,6 @@ package records
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/kazemisoroush/assistant/pkg/records"
 	"github.com/kazemisoroush/assistant/pkg/records/knowledgebase"
@@ -16,20 +15,20 @@ import (
 //go:generate mockgen -destination=./mocks/mock_service.go -mock_names=Service=MockService -package=mocks . Service
 type Service interface {
 	// Ingest processes and stores a record
-	Ingest(ctx context.Context, rec *records.Record) error
+	Ingest(ctx context.Context, rec records.Record) error
 
 	// Search performs semantic search with optional metadata filters
 	// For now this is basic keyword search, will be enhanced with vector search
 	Search(ctx context.Context, query string, filters map[string]interface{}, limit int) ([]records.SearchResult, error)
 
 	// GetByID retrieves a record by its ID
-	GetByID(ctx context.Context, id string) (*records.Record, error)
+	GetByID(ctx context.Context, id string) (records.Record, error)
 
 	// List returns all records with optional type filter
-	List(ctx context.Context, recType records.RecordType) ([]*records.Record, error)
+	List(ctx context.Context, recType records.RecordType) ([]records.Record, error)
 
 	// Update updates an existing record
-	Update(ctx context.Context, rec *records.Record) error
+	Update(ctx context.Context, rec records.Record) error
 
 	// Delete removes a record
 	Delete(ctx context.Context, id string) error
@@ -51,7 +50,7 @@ func NewRecordService(storage storage.Storage, vectorStorage knowledgebase.Vecto
 }
 
 // Ingest processes and stores a record
-func (s *RecordService) Ingest(ctx context.Context, rec *records.Record) error {
+func (s *RecordService) Ingest(ctx context.Context, rec records.Record) error {
 	// Validate record
 	if rec.ID == "" {
 		return fmt.Errorf("record ID is required")
@@ -74,10 +73,8 @@ func (s *RecordService) Ingest(ctx context.Context, rec *records.Record) error {
 	}
 
 	// Index in vector store for semantic search
-	if s.vectorStorage != nil {
-		if err := s.vectorStorage.Index(ctx, rec); err != nil {
-			return fmt.Errorf("failed to index record: %w", err)
-		}
+	if err := s.vectorStorage.Index(ctx, rec); err != nil {
+		return fmt.Errorf("failed to index record: %w", err)
 	}
 
 	return nil
@@ -111,17 +108,17 @@ func (s *RecordService) Search(ctx context.Context, query string, filters map[st
 }
 
 // GetByID retrieves a record by its ID
-func (s *RecordService) GetByID(ctx context.Context, id string) (*records.Record, error) {
+func (s *RecordService) GetByID(ctx context.Context, id string) (records.Record, error) {
 	return s.storage.Get(ctx, id)
 }
 
 // List returns all records with optional type filter
-func (s *RecordService) List(ctx context.Context, recType records.RecordType) ([]*records.Record, error) {
+func (s *RecordService) List(ctx context.Context, recType records.RecordType) ([]records.Record, error) {
 	return s.storage.List(ctx, recType)
 }
 
 // Update updates an existing record
-func (s *RecordService) Update(ctx context.Context, rec *records.Record) error {
+func (s *RecordService) Update(ctx context.Context, rec records.Record) error {
 	if rec.ID == "" {
 		return fmt.Errorf("record ID is required")
 	}
@@ -154,26 +151,6 @@ func (s *RecordService) Delete(ctx context.Context, id string) error {
 	}
 
 	return nil
-}
-
-// ExtractTextFromFile is a helper function to extract text content from various file types
-// For now, it just reads plain text. Later we can add PDF, DOCX, image OCR support
-func ExtractTextFromFile(_ string) (string, error) {
-	// TODO: Implement based on file type
-	// - .txt: read directly
-	// - .pdf: use pdf library
-	// - .docx: use docx library
-	// - .jpg, .png: use OCR
-	return "", fmt.Errorf("not implemented yet")
-}
-
-// NormalizeContent performs basic text normalization
-func NormalizeContent(content string) string {
-	// Trim whitespace
-	content = strings.TrimSpace(content)
-	// Normalize line endings
-	content = strings.ReplaceAll(content, "\r\n", "\n")
-	return content
 }
 
 // applyFilters filters search results based on metadata criteria

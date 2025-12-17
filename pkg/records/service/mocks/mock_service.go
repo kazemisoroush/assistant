@@ -56,10 +56,10 @@ func (mr *MockServiceMockRecorder) Delete(ctx, id any) *gomock.Call {
 }
 
 // GetByID mocks base method.
-func (m *MockService) GetByID(ctx context.Context, id string) (*records.Record, error) {
+func (m *MockService) GetByID(ctx context.Context, id string) (records.Record, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByID", ctx, id)
-	ret0, _ := ret[0].(*records.Record)
+	ret0, _ := ret[0].(records.Record)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -71,7 +71,7 @@ func (mr *MockServiceMockRecorder) GetByID(ctx, id any) *gomock.Call {
 }
 
 // Ingest mocks base method.
-func (m *MockService) Ingest(ctx context.Context, rec *records.Record) error {
+func (m *MockService) Ingest(ctx context.Context, rec records.Record) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Ingest", ctx, rec)
 	ret0, _ := ret[0].(error)
@@ -85,10 +85,10 @@ func (mr *MockServiceMockRecorder) Ingest(ctx, rec any) *gomock.Call {
 }
 
 // List mocks base method.
-func (m *MockService) List(ctx context.Context, recType records.RecordType) ([]*records.Record, error) {
+func (m *MockService) List(ctx context.Context, recType records.RecordType) ([]records.Record, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List", ctx, recType)
-	ret0, _ := ret[0].([]*records.Record)
+	ret0, _ := ret[0].([]records.Record)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -115,7 +115,7 @@ func (mr *MockServiceMockRecorder) Search(ctx, query, filters, limit any) *gomoc
 }
 
 // Update mocks base method.
-func (m *MockService) Update(ctx context.Context, rec *records.Record) error {
+func (m *MockService) Update(ctx context.Context, rec records.Record) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", ctx, rec)
 	ret0, _ := ret[0].(error)

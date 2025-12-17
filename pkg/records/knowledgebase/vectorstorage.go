@@ -12,7 +12,7 @@ import (
 //go:generate mockgen -destination=./mocks/mock_vectorstorage.go -mock_names=VectorStorage=MockVectorStorage -package=mocks . VectorStorage
 type VectorStorage interface {
 	// Index adds record embeddings to the vector store
-	Index(ctx context.Context, rec *records.Record) error
+	Index(ctx context.Context, rec records.Record) error
 
 	// Search performs semantic similarity search
 	Search(ctx context.Context, query string, limit int) ([]records.SearchResult, error)

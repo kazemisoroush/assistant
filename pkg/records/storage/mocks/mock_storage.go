@@ -56,10 +56,10 @@ func (mr *MockStorageMockRecorder) Delete(ctx, id any) *gomock.Call {
 }
 
 // Get mocks base method.
-func (m *MockStorage) Get(ctx context.Context, id string) (*records.Record, error) {
+func (m *MockStorage) Get(ctx context.Context, id string) (records.Record, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", ctx, id)
-	ret0, _ := ret[0].(*records.Record)
+	ret0, _ := ret[0].(records.Record)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -71,10 +71,10 @@ func (mr *MockStorageMockRecorder) Get(ctx, id any) *gomock.Call {
 }
 
 // List mocks base method.
-func (m *MockStorage) List(ctx context.Context, recType records.RecordType) ([]*records.Record, error) {
+func (m *MockStorage) List(ctx context.Context, recType records.RecordType) ([]records.Record, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List", ctx, recType)
-	ret0, _ := ret[0].([]*records.Record)
+	ret0, _ := ret[0].([]records.Record)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -86,7 +86,7 @@ func (mr *MockStorageMockRecorder) List(ctx, recType any) *gomock.Call {
 }
 
 // Store mocks base method.
-func (m *MockStorage) Store(ctx context.Context, rec *records.Record) error {
+func (m *MockStorage) Store(ctx context.Context, rec records.Record) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Store", ctx, rec)
 	ret0, _ := ret[0].(error)
@@ -100,7 +100,7 @@ func (mr *MockStorageMockRecorder) Store(ctx, rec any) *gomock.Call {
 }
 
 // Update mocks base method.
-func (m *MockStorage) Update(ctx context.Context, rec *records.Record) error {
+func (m *MockStorage) Update(ctx context.Context, rec records.Record) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", ctx, rec)
 	ret0, _ := ret[0].(error)

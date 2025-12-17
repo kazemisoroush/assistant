@@ -22,7 +22,7 @@ type RecordEmbedding struct {
 	RecID  string
 	Vector []float64
 	Terms  map[string]float64 // term -> frequency for simple vector representation
-	Record *records.Record
+	Record records.Record
 }
 
 // NewLocalVectorStorage creates a new local vector store instance
@@ -34,7 +34,7 @@ func NewLocalVectorStorage() VectorStorage {
 
 // Index adds record embeddings to the vector store
 // For POC, we use a simple bag-of-words approach with TF-IDF-like scoring
-func (lvs *LocalVectorStorage) Index(_ context.Context, rec *records.Record) error {
+func (lvs *LocalVectorStorage) Index(_ context.Context, rec records.Record) error {
 	lvs.mu.Lock()
 	defer lvs.mu.Unlock()
 
@@ -76,7 +76,7 @@ func (lvs *LocalVectorStorage) Search(_ context.Context, query string, limit int
 		score := cosineSimilarity(queryVector, embedding.Vector)
 		if score > 0 {
 			results = append(results, records.SearchResult{
-				Record: *embedding.Record,
+				Record: embedding.Record,
 				Score:  score,
 			})
 		}

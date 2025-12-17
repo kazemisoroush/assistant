@@ -13,6 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
+	handler "github.com/kazemisoroush/assistant/pkg/handler"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -41,13 +42,16 @@ func (m *MockHandler) EXPECT() *MockHandlerMockRecorder {
 }
 
 // Handle mocks base method.
-func (m *MockHandler) Handle(ctx context.Context) {
+func (m *MockHandler) Handle(ctx context.Context, request handler.Request) (handler.Response, error) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "Handle", ctx)
+	ret := m.ctrl.Call(m, "Handle", ctx, request)
+	ret0, _ := ret[0].(handler.Response)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Handle indicates an expected call of Handle.
-func (mr *MockHandlerMockRecorder) Handle(ctx any) *gomock.Call {
+func (mr *MockHandlerMockRecorder) Handle(ctx, request any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Handle", reflect.TypeOf((*MockHandler)(nil).Handle), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Handle", reflect.TypeOf((*MockHandler)(nil).Handle), ctx, request)
 }

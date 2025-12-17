@@ -70,7 +70,7 @@ func (mr *MockVectorStorageMockRecorder) Delete(ctx, recID any) *gomock.Call {
 }
 
 // Index mocks base method.
-func (m *MockVectorStorage) Index(ctx context.Context, rec *records.Record) error {
+func (m *MockVectorStorage) Index(ctx context.Context, rec records.Record) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Index", ctx, rec)
 	ret0, _ := ret[0].(error)
