@@ -1,9 +1,0 @@
-basePath: /api/v1
-host: localhost:8080
-info:
-  contact: {}
-  description: API for the Assistant application
-  title: Assistant API
-  version: "1.0"
-paths: {}
-swagger: "2.0"

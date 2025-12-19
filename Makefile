@@ -78,9 +78,6 @@ docker-build:
 build:
 	@echo "Building application binaries..."
 	@mkdir -p bin/
-	@go build -o bin/api -ldflags="-s -w" ./cmd/api
-	@echo "API binary built at bin/api"
-	@echo "Binary size: $$(du -h bin/api | cut -f1)"
 	@go build -o bin/assistant -ldflags="-s -w" ./cmd/assistant
 	@echo "Assistant CLI binary built at bin/assistant"
 	@echo "Binary size: $$(du -h bin/assistant | cut -f1)"
@@ -96,5 +93,5 @@ clean:
 
 .PHONY: help test lint mock swagger build serve serve-detached stop logs docker-build clean ci
 
-ci: mock test lint build swagger
+ci: mock test lint build
 	@echo "🎉 CI pipeline completed successfully!"
