@@ -27,9 +27,6 @@ type Service interface {
 	// List returns all records with optional type filter
 	List(ctx context.Context, recType records.RecordType) ([]records.Record, error)
 
-	// Update updates an existing record
-	Update(ctx context.Context, rec records.Record) error
-
 	// Delete removes a record
 	Delete(ctx context.Context, id string) error
 }
@@ -49,8 +46,20 @@ func NewRecordService(storage storage.Storage, vectorStorage knowledgebase.Vecto
 	}
 }
 
-// Ingest processes and stores a record
+// Ingest processes and stores a record (upsert behavior)
 func (s *RecordService) Ingest(ctx context.Context, rec records.Record) error {
+	// Check if record exists
+	_, err := s.storage.Get(ctx, rec.ID)
+	if err == nil {
+		// Record exists, delete from both storage and vector store
+		if err := s.storage.Delete(ctx, rec.ID); err != nil {
+			return fmt.Errorf("failed to delete existing record from storage: %w", err)
+		}
+		if err := s.vectorStorage.Delete(ctx, rec.ID); err != nil {
+			return fmt.Errorf("failed to delete existing record from vector store: %w", err)
+		}
+	}
+
 	// Store the record
 	if err := s.storage.Store(ctx, rec); err != nil {
 		return fmt.Errorf("failed to store record: %w", err)
@@ -59,20 +68,6 @@ func (s *RecordService) Ingest(ctx context.Context, rec records.Record) error {
 	// Index in vector store for semantic search
 	if err := s.vectorStorage.Index(ctx, rec); err != nil {
 		return fmt.Errorf("failed to index record: %w", err)
-	}
-
-	return nil
-}
-
-// Update updates an existing record
-func (s *RecordService) Update(ctx context.Context, rec records.Record) error {
-	if err := s.storage.Update(ctx, rec); err != nil {
-		return fmt.Errorf("failed to update record: %w", err)
-	}
-
-	// Update in vector store (reindex with new content)
-	if err := s.vectorStorage.Index(ctx, rec); err != nil {
-		return fmt.Errorf("failed to reindex record: %w", err)
 	}
 
 	return nil

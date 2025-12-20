@@ -113,17 +113,3 @@ func (mr *MockServiceMockRecorder) Search(ctx, query, filters, limit any) *gomoc
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Search", reflect.TypeOf((*MockService)(nil).Search), ctx, query, filters, limit)
 }
-
-// Update mocks base method.
-func (m *MockService) Update(ctx context.Context, rec records.Record) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ctx, rec)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Update indicates an expected call of Update.
-func (mr *MockServiceMockRecorder) Update(ctx, rec any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockService)(nil).Update), ctx, rec)
-}
