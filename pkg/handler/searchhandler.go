@@ -6,19 +6,19 @@ import (
 	service "github.com/kazemisoroush/assistant/pkg/records/service"
 )
 
-// SearchHandler handles searching for records.
-type SearchHandler struct {
+// QueryHandler handles searching for records.
+type QueryHandler struct {
 	service service.Service
 }
 
-// NewSearchHandler creates a new search handler.
-func NewSearchHandler(service service.Service) Handler {
-	return &SearchHandler{
+// NewQueryHandler creates a new search handler.
+func NewQueryHandler(service service.Service) Handler {
+	return &QueryHandler{
 		service: service,
 	}
 }
 
 // Handle implements Handler.
-func (l SearchHandler) Handle(_ context.Context, _ Request) (Response, error) {
+func (l QueryHandler) Handle(_ context.Context, _ Request) (Response, error) {
 	return Response{}, nil
 }

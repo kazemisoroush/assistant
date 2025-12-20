@@ -58,7 +58,7 @@ func main() {
 	case "scrape":
 		_, _ = handler.NewLocalScraperHandler(recordService, []source.Source{localSource}).Handle(ctx, handler.Request{})
 	case "search":
-		_, _ = handler.NewSearchHandler(recordService).Handle(ctx, handler.Request{})
+		_, _ = handler.NewQueryHandler(recordService).Handle(ctx, handler.Request{})
 	default:
 		fmt.Fprintf(os.Stderr, "Unknown command: %s\n\n", command)
 		os.Exit(1)
