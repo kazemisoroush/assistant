@@ -3,18 +3,18 @@ package handler
 import (
 	"context"
 
-	service "github.com/kazemisoroush/assistant/pkg/records/service"
+	"github.com/kazemisoroush/assistant/pkg/records/ingestor"
 )
 
 // QueryHandler handles searching for records.
 type QueryHandler struct {
-	service service.Service
+	ingestor ingestor.Ingestor
 }
 
 // NewQueryHandler creates a new search handler.
-func NewQueryHandler(service service.Service) Handler {
+func NewQueryHandler(ingestor ingestor.Ingestor) Handler {
 	return &QueryHandler{
-		service: service,
+		ingestor: ingestor,
 	}
 }
 

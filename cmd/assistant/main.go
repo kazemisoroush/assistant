@@ -10,8 +10,8 @@ import (
 	"github.com/kazemisoroush/assistant/pkg/config"
 	"github.com/kazemisoroush/assistant/pkg/handler"
 	"github.com/kazemisoroush/assistant/pkg/records/extractor"
+	"github.com/kazemisoroush/assistant/pkg/records/ingestor"
 	"github.com/kazemisoroush/assistant/pkg/records/knowledgebase"
-	recordsvc "github.com/kazemisoroush/assistant/pkg/records/service"
 	"github.com/kazemisoroush/assistant/pkg/records/source"
 	"github.com/kazemisoroush/assistant/pkg/records/storage"
 )
@@ -42,7 +42,7 @@ func main() {
 	vectorStorage := knowledgebase.NewLocalVectorStorage()
 
 	// Initialize service
-	recordService := recordsvc.NewRecordService(sqliteStorage, vectorStorage)
+	recordService := ingestor.NewRecordIngestor(sqliteStorage, vectorStorage)
 
 	// Extractors
 	typeExtractor := extractor.NewLlamaTypeExtractor(cfg.AI.Ollama.URL, cfg.AI.Ollama.Model)
