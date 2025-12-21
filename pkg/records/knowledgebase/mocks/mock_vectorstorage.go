@@ -41,20 +41,6 @@ func (m *MockVectorStorage) EXPECT() *MockVectorStorageMockRecorder {
 	return m.recorder
 }
 
-// Close mocks base method.
-func (m *MockVectorStorage) Close() error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Close")
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Close indicates an expected call of Close.
-func (mr *MockVectorStorageMockRecorder) Close() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Close", reflect.TypeOf((*MockVectorStorage)(nil).Close))
-}
-
 // Delete mocks base method.
 func (m *MockVectorStorage) Delete(ctx context.Context, recID string) error {
 	m.ctrl.T.Helper()
@@ -84,16 +70,16 @@ func (mr *MockVectorStorageMockRecorder) Index(ctx, rec any) *gomock.Call {
 }
 
 // Search mocks base method.
-func (m *MockVectorStorage) Search(ctx context.Context, prompt string) ([]records.SearchResult, error) {
+func (m *MockVectorStorage) Search(ctx context.Context, prompt string, limit int) ([]records.SearchResult, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Search", ctx, prompt)
+	ret := m.ctrl.Call(m, "Search", ctx, prompt, limit)
 	ret0, _ := ret[0].([]records.SearchResult)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Search indicates an expected call of Search.
-func (mr *MockVectorStorageMockRecorder) Search(ctx, prompt any) *gomock.Call {
+func (mr *MockVectorStorageMockRecorder) Search(ctx, prompt, limit any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Search", reflect.TypeOf((*MockVectorStorage)(nil).Search), ctx, prompt)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Search", reflect.TypeOf((*MockVectorStorage)(nil).Search), ctx, prompt, limit)
 }

@@ -34,31 +34,31 @@ func NewLocalVectorStorage() VectorStorage {
 
 // Index adds record embeddings to the vector store
 // For POC, we use a simple bag-of-words approach with TF-IDF-like scoring
-func (lvs *LocalVectorStorage) Index(_ context.Context, rec records.Record) error {
+func (lvs *LocalVectorStorage) Index(_ context.Context, record records.Record) error {
 	lvs.mu.Lock()
 	defer lvs.mu.Unlock()
 
-	if rec.ID == "" {
+	if record.ID == "" {
 		return fmt.Errorf("record ID is required")
 	}
 
 	// Create a simple term frequency map from record content
-	terms := extractTerms(rec.Content)
+	terms := extractTerms(record.Content)
 
 	// Create embedding
 	embedding := &RecordEmbedding{
-		RecID:  rec.ID,
+		RecID:  record.ID,
 		Terms:  terms,
-		Record: rec,
+		Record: record,
 		Vector: termsToVector(terms),
 	}
 
-	lvs.embeddings[rec.ID] = embedding
+	lvs.embeddings[record.ID] = embedding
 	return nil
 }
 
 // Search performs semantic similarity search using cosine similarity
-func (lvs *LocalVectorStorage) Search(_ context.Context, prompt string) ([]records.SearchResult, error) {
+func (lvs *LocalVectorStorage) Search(_ context.Context, prompt string, limit int) ([]records.SearchResult, error) {
 	lvs.mu.RLock()
 	defer lvs.mu.RUnlock()
 
@@ -91,6 +91,11 @@ func (lvs *LocalVectorStorage) Search(_ context.Context, prompt string) ([]recor
 		}
 	}
 
+	// Apply limit
+	if limit > 0 && len(results) > limit {
+		results = results[:limit]
+	}
+
 	return results, nil
 }
 
@@ -104,11 +109,6 @@ func (lvs *LocalVectorStorage) Delete(_ context.Context, recID string) error {
 	}
 
 	delete(lvs.embeddings, recID)
-	return nil
-}
-
-// Close closes the vector store connection (no-op for local store)
-func (lvs *LocalVectorStorage) Close() error {
 	return nil
 }
 

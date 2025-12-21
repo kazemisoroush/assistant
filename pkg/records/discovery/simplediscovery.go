@@ -3,6 +3,7 @@ package discovery
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/kazemisoroush/assistant/pkg/records/knowledgebase"
 )
@@ -20,7 +21,24 @@ func NewSimpleDiscovery(vectorStorage knowledgebase.VectorStorage) Discovery {
 }
 
 // Discover implements the Discovery interface.
-func (sd *SimpleDiscovery) Discover(_ context.Context, _ string) error {
-	// Simple discovery logic goes here.
-	return nil
+func (d *SimpleDiscovery) Discover(ctx context.Context, request DiscoverRequest) (DiscoverResponse, error) {
+	result, err := d.vectorStorage.Search(ctx, request.Prompt, request.Limit)
+	if err != nil {
+		return DiscoverResponse{}, fmt.Errorf("vector storage search failed: %w", err)
+	}
+
+	hits := make([]Hit, 0, len(result))
+	for _, res := range result {
+		hit := Hit{
+			RecordID: res.Record.ID,
+			Score:    res.Score,
+			Meta:     res.Record.Metadata,
+			Source:   "vector",
+		}
+		hits = append(hits, hit)
+	}
+
+	return DiscoverResponse{
+		Hits: hits,
+	}, nil
 }

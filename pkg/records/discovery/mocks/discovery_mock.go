@@ -13,6 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
+	discovery "github.com/kazemisoroush/assistant/pkg/records/discovery"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -41,15 +42,16 @@ func (m *MockDiscovery) EXPECT() *MockDiscoveryMockRecorder {
 }
 
 // Discover mocks base method.
-func (m *MockDiscovery) Discover(ctx context.Context, prompt string) error {
+func (m *MockDiscovery) Discover(ctx context.Context, request discovery.DiscoverRequest) (discovery.DiscoverResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Discover", ctx, prompt)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret := m.ctrl.Call(m, "Discover", ctx, request)
+	ret0, _ := ret[0].(discovery.DiscoverResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Discover indicates an expected call of Discover.
-func (mr *MockDiscoveryMockRecorder) Discover(ctx, prompt any) *gomock.Call {
+func (mr *MockDiscoveryMockRecorder) Discover(ctx, request any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Discover", reflect.TypeOf((*MockDiscovery)(nil).Discover), ctx, prompt)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Discover", reflect.TypeOf((*MockDiscovery)(nil).Discover), ctx, request)
 }

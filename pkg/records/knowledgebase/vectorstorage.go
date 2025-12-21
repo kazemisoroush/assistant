@@ -15,11 +15,8 @@ type VectorStorage interface {
 	Index(ctx context.Context, rec records.Record) error
 
 	// Search performs semantic similarity search
-	Search(ctx context.Context, prompt string) ([]records.SearchResult, error)
+	Search(ctx context.Context, prompt string, limit int) ([]records.SearchResult, error)
 
 	// Delete removes record from vector store
 	Delete(ctx context.Context, recID string) error
-
-	// Close closes the vector store connection
-	Close() error
 }

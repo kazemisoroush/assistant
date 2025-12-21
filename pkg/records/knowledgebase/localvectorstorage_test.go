@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/kazemisoroush/assistant/pkg/records"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestLocalVectorStorage_Index(t *testing.T) {
@@ -20,9 +22,7 @@ func TestLocalVectorStorage_Index(t *testing.T) {
 	err := store.Index(ctx, rec)
 
 	// Assert
-	if err != nil {
-		t.Errorf("Index() error = %v, want nil", err)
-	}
+	require.NoError(t, err, "Index() error should be nil")
 }
 
 func TestLocalVectorStorage_Index_MissingID(t *testing.T) {
@@ -37,9 +37,7 @@ func TestLocalVectorStorage_Index_MissingID(t *testing.T) {
 	err := store.Index(ctx, rec)
 
 	// Assert
-	if err == nil {
-		t.Error("Index() error = nil, want error for missing ID")
-	}
+	require.Error(t, err, "Index() error should not be nil for missing ID")
 }
 
 func TestLocalVectorStorage_Search(t *testing.T) {
@@ -55,18 +53,12 @@ func TestLocalVectorStorage_Search(t *testing.T) {
 	}
 
 	// Act
-	results, err := store.Search(ctx, "programming language")
+	results, err := store.Search(ctx, "programming language", 10)
 
 	// Assert
-	if err != nil {
-		t.Errorf("Search() error = %v, want nil", err)
-	}
-	if len(results) == 0 {
-		t.Error("Search() returned no results, want at least 1")
-	}
-	if len(results) > 0 && results[0].Record.ID != "rec1" {
-		t.Errorf("Search() returned record ID = %s, want rec1", results[0].Record.ID)
-	}
+	require.NoError(t, err, "Search() error should be nil")
+	assert.Greater(t, len(results), 0, "Search() should return at least one result")
+	assert.Equal(t, "rec1", results[0].Record.ID, "Search() should return the indexed record")
 }
 
 func TestLocalVectorStorage_Search_EmptyStore(t *testing.T) {
@@ -75,15 +67,11 @@ func TestLocalVectorStorage_Search_EmptyStore(t *testing.T) {
 	ctx := context.Background()
 
 	// Act
-	results, err := store.Search(ctx, "test query")
+	results, err := store.Search(ctx, "test query", 10)
 
 	// Assert
-	if err != nil {
-		t.Errorf("Search() error = %v, want nil", err)
-	}
-	if len(results) != 0 {
-		t.Errorf("Search() returned %d results, want 0", len(results))
-	}
+	require.NoError(t, err, "Search() error should be nil")
+	assert.Equal(t, 0, len(results), "Search() should return no results")
 }
 
 func TestLocalVectorStorage_Delete(t *testing.T) {
@@ -102,18 +90,12 @@ func TestLocalVectorStorage_Delete(t *testing.T) {
 	err := store.Delete(ctx, "rec1")
 
 	// Assert
-	if err != nil {
-		t.Errorf("Delete() error = %v, want nil", err)
-	}
+	require.NoError(t, err, "Delete() error should be nil")
 
 	// Verify record is deleted
-	results, err := store.Search(ctx, "test")
-	if err != nil {
-		t.Errorf("Search() after Delete() error = %v, want nil", err)
-	}
-	if len(results) != 0 {
-		t.Errorf("After Delete(), Search() returned %d results, want 0", len(results))
-	}
+	results, err := store.Search(ctx, "test", 10)
+	require.NoError(t, err, "Search() after Delete() error should be nil")
+	assert.Equal(t, 0, len(results), "After Delete(), Search() should return no results")
 }
 
 func TestLocalVectorStorage_Delete_NotFound(t *testing.T) {
@@ -125,20 +107,5 @@ func TestLocalVectorStorage_Delete_NotFound(t *testing.T) {
 	err := store.Delete(ctx, "nonexistent")
 
 	// Assert
-	if err == nil {
-		t.Error("Delete() error = nil, want error for nonexistent record")
-	}
-}
-
-func TestLocalVectorStorage_Close(t *testing.T) {
-	// Arrange
-	store := NewLocalVectorStorage()
-
-	// Act
-	err := store.Close()
-
-	// Assert
-	if err != nil {
-		t.Errorf("Close() error = %v, want nil", err)
-	}
+	require.Error(t, err, "Delete() error should not be nil for nonexistent record")
 }
