@@ -84,16 +84,16 @@ func (mr *MockVectorStorageMockRecorder) Index(ctx, rec any) *gomock.Call {
 }
 
 // Search mocks base method.
-func (m *MockVectorStorage) Search(ctx context.Context, query string, limit int) ([]records.SearchResult, error) {
+func (m *MockVectorStorage) Search(ctx context.Context, prompt string) ([]records.SearchResult, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Search", ctx, query, limit)
+	ret := m.ctrl.Call(m, "Search", ctx, prompt)
 	ret0, _ := ret[0].([]records.SearchResult)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Search indicates an expected call of Search.
-func (mr *MockVectorStorageMockRecorder) Search(ctx, query, limit any) *gomock.Call {
+func (mr *MockVectorStorageMockRecorder) Search(ctx, prompt any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Search", reflect.TypeOf((*MockVectorStorage)(nil).Search), ctx, query, limit)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Search", reflect.TypeOf((*MockVectorStorage)(nil).Search), ctx, prompt)
 }

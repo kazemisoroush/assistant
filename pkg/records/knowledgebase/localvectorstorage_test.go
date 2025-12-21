@@ -55,7 +55,7 @@ func TestLocalVectorStorage_Search(t *testing.T) {
 	}
 
 	// Act
-	results, err := store.Search(ctx, "programming language", 10)
+	results, err := store.Search(ctx, "programming language")
 
 	// Assert
 	if err != nil {
@@ -75,7 +75,7 @@ func TestLocalVectorStorage_Search_EmptyStore(t *testing.T) {
 	ctx := context.Background()
 
 	// Act
-	results, err := store.Search(ctx, "test query", 10)
+	results, err := store.Search(ctx, "test query")
 
 	// Assert
 	if err != nil {
@@ -107,7 +107,7 @@ func TestLocalVectorStorage_Delete(t *testing.T) {
 	}
 
 	// Verify record is deleted
-	results, err := store.Search(ctx, "test", 10)
+	results, err := store.Search(ctx, "test")
 	if err != nil {
 		t.Errorf("Search() after Delete() error = %v, want nil", err)
 	}

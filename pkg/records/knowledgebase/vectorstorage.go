@@ -15,7 +15,7 @@ type VectorStorage interface {
 	Index(ctx context.Context, rec records.Record) error
 
 	// Search performs semantic similarity search
-	Search(ctx context.Context, query string, limit int) ([]records.SearchResult, error)
+	Search(ctx context.Context, prompt string) ([]records.SearchResult, error)
 
 	// Delete removes record from vector store
 	Delete(ctx context.Context, recID string) error
@@ -23,9 +23,3 @@ type VectorStorage interface {
 	// Close closes the vector store connection
 	Close() error
 }
-
-// TODO: Implement concrete implementations:
-// - OllamaEmbedder: Use local Ollama for embeddings
-// - BedrockEmbedder: Use AWS Bedrock for embeddings
-// - ChromaVectorStorage: Use Chroma for vector storage
-// - LocalVectorStorage: Simple in-memory vector store for development

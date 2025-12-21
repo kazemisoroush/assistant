@@ -58,7 +58,7 @@ func (lvs *LocalVectorStorage) Index(_ context.Context, rec records.Record) erro
 }
 
 // Search performs semantic similarity search using cosine similarity
-func (lvs *LocalVectorStorage) Search(_ context.Context, query string, limit int) ([]records.SearchResult, error) {
+func (lvs *LocalVectorStorage) Search(_ context.Context, prompt string) ([]records.SearchResult, error) {
 	lvs.mu.RLock()
 	defer lvs.mu.RUnlock()
 
@@ -67,7 +67,7 @@ func (lvs *LocalVectorStorage) Search(_ context.Context, query string, limit int
 	}
 
 	// Create query vector
-	queryTerms := extractTerms(query)
+	queryTerms := extractTerms(prompt)
 	queryVector := termsToVector(queryTerms)
 
 	// Calculate similarity scores
@@ -89,11 +89,6 @@ func (lvs *LocalVectorStorage) Search(_ context.Context, query string, limit int
 				results[j], results[j+1] = results[j+1], results[j]
 			}
 		}
-	}
-
-	// Apply limit
-	if limit > 0 && len(results) > limit {
-		results = results[:limit]
 	}
 
 	return results, nil
