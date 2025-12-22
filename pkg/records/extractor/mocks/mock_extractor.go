@@ -10,6 +10,7 @@
 package mocks
 
 import (
+	context "context"
 	reflect "reflect"
 
 	records "github.com/kazemisoroush/assistant/pkg/records"
@@ -41,16 +42,16 @@ func (m *MockContentExtractor) EXPECT() *MockContentExtractorMockRecorder {
 }
 
 // Extract mocks base method.
-func (m *MockContentExtractor) Extract(rawContent string) (records.Record, error) {
+func (m *MockContentExtractor) Extract(ctx context.Context, rawContent string) (records.Record, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Extract", rawContent)
+	ret := m.ctrl.Call(m, "Extract", ctx, rawContent)
 	ret0, _ := ret[0].(records.Record)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Extract indicates an expected call of Extract.
-func (mr *MockContentExtractorMockRecorder) Extract(rawContent any) *gomock.Call {
+func (mr *MockContentExtractorMockRecorder) Extract(ctx, rawContent any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Extract", reflect.TypeOf((*MockContentExtractor)(nil).Extract), rawContent)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Extract", reflect.TypeOf((*MockContentExtractor)(nil).Extract), ctx, rawContent)
 }

@@ -40,10 +40,10 @@ func main() {
 	}
 
 	// Initialize vector store (using local implementation for POC)
-	vectorStorage := knowledgebase.NewLocalVectorStorage()
+	localVectorStorage := knowledgebase.NewLocalVectorStorage()
 
 	// Initialize service
-	recordService := ingestor.NewRecordIngestor(sqliteStorage, vectorStorage)
+	recordService := ingestor.NewRecordIngestor(sqliteStorage, localVectorStorage)
 
 	// Extractors
 	typeExtractor := extractor.NewLlamaTypeExtractor(cfg.AI.Ollama.URL, cfg.AI.Ollama.Model)
@@ -53,7 +53,7 @@ func main() {
 	localSource := source.NewLocalSource(extractor, cfg.Sources.Local.BasePath)
 
 	// Initialize discovery service
-	discoveryService := discovery.NewSimpleDiscovery(vectorStorage)
+	discoveryService := discovery.NewSimpleDiscovery(localVectorStorage)
 
 	ctx, cancel := context.WithTimeout(context.Background(), cfg.Timeout)
 	defer cancel()

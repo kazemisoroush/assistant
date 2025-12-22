@@ -1,6 +1,7 @@
 package extractor
 
 import (
+	"context"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -26,7 +27,7 @@ func NewOCRContentExtractor(typeExtractor TypeExtractor) ContentExtractor {
 }
 
 // Extract processes raw content (image or text) and returns a Record
-func (o *OCRContentExtractor) Extract(rawContent string) (records.Record, error) {
+func (o *OCRContentExtractor) Extract(ctx context.Context, rawContent string) (records.Record, error) {
 	now := time.Now()
 
 	// 1) Try to OCR if rawContent looks like an image input; otherwise treat it as already-text.
@@ -36,7 +37,10 @@ func (o *OCRContentExtractor) Extract(rawContent string) (records.Record, error)
 	}
 
 	// 2) Classify based on extracted text
-	recordType := o.typeExtractor.GetType(text)
+	recordType, err := o.typeExtractor.GetType(ctx, text)
+	if err != nil {
+		return records.Record{}, fmt.Errorf("failed to classify record type: %w", err)
+	}
 
 	rec := records.Record{
 		ID:        fmt.Sprintf("ocr-%d", now.UnixNano()),

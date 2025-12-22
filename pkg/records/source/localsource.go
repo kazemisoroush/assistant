@@ -32,7 +32,7 @@ func (ls *LocalSource) Name() string {
 }
 
 // Scrape reads files from the local directory structure
-func (ls *LocalSource) Scrape(_ context.Context) (<-chan records.Record, <-chan error) {
+func (ls *LocalSource) Scrape(ctx context.Context) (<-chan records.Record, <-chan error) {
 	recordChan := make(chan records.Record)
 	errChan := make(chan error, 1)
 
@@ -41,6 +41,13 @@ func (ls *LocalSource) Scrape(_ context.Context) (<-chan records.Record, <-chan 
 		defer close(errChan)
 
 		err := filepath.WalkDir(ls.basePath, func(path string, d fs.DirEntry, err error) error {
+			// Check for context cancellation
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			default:
+			}
+
 			if err != nil {
 				return err
 			}
@@ -57,7 +64,7 @@ func (ls *LocalSource) Scrape(_ context.Context) (<-chan records.Record, <-chan 
 				return nil // Continue processing other files
 			}
 
-			record, err := ls.extractor.Extract(string(content))
+			record, err := ls.extractor.Extract(ctx, string(content))
 			if err != nil {
 				errChan <- fmt.Errorf("failed to extract record from file %s: %w", path, err)
 				return nil // Continue processing other files
