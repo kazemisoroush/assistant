@@ -13,24 +13,15 @@ import (
 func TestLoadConfig_Success(t *testing.T) {
 	// Setup environment variables
 	envVars := map[string]string{
-		"TIMEOUT":                     "120s",
-		"LOG_LEVEL":                   "debug",
-		"SQLITE_PATH":                 "/tmp/test.db",
-		"AI_DEFAULT_PROVIDER":         "ollama",
-		"AI_OLLAMA_URL":               "http://localhost:11434",
-		"AI_OLLAMA_MODEL":             "llama2",
-		"AI_BEDROCK_REGION":           "us-west-2",
-		"AI_BEDROCK_FOUNDATION_MODEL": "anthropic.claude-v2",
-		"AI_BEDROCK_S3_BUCKET_NAME":   "test-bucket",
-		"POSTGRES_HOST":               "db.example.com",
-		"POSTGRES_PORT":               "5433",
-		"POSTGRES_DATABASE":           "testdb",
-		"POSTGRES_USERNAME":           "testuser",
-		"POSTGRES_PASSWORD":           "testpass",
-		"POSTGRES_SSL_MODE":           "require",
-		"SOURCES_STORAGE_PATH":        "/data/test",
-		"SOURCES_LOCAL_ENABLED":       "true",
-		"SOURCES_LOCAL_BASE_PATH":     "/tmp/testdata",
+		"TIMEOUT":                 "120s",
+		"LOG_LEVEL":               "debug",
+		"SQLITE_PATH":             "/tmp/test.db",
+		"AI_DEFAULT_PROVIDER":     "ollama",
+		"AI_OLLAMA_URL":           "http://localhost:11434",
+		"AI_OLLAMA_MODEL":         "llama2",
+		"SOURCES_STORAGE_PATH":    "/data/test",
+		"SOURCES_LOCAL_ENABLED":   "true",
+		"SOURCES_LOCAL_BASE_PATH": "/tmp/testdata",
 	}
 
 	// Set environment variables
