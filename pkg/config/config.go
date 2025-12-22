@@ -16,11 +16,10 @@ import (
 
 // Config represents the configuration for the application
 type Config struct {
-	Timeout    time.Duration  `env:"TIMEOUT" envDefault:"180s"`
-	LogLevel   string         `env:"LOG_LEVEL" envDefault:"info"`
-	AWSConfig  aws.Config     // Loaded using AWS SDK, not from env
-	Postgres   PostgresConfig `envPrefix:"POSTGRES_"`
-	SQLitePath string         `env:"SQLITE_PATH" envDefault:"./data/assistant.db"`
+	Timeout    time.Duration `env:"TIMEOUT" envDefault:"180s"`
+	LogLevel   string        `env:"LOG_LEVEL" envDefault:"info"`
+	AWSConfig  aws.Config    // Loaded using AWS SDK, not from env
+	SQLitePath string        `env:"SQLITE_PATH" envDefault:"./data/assistant.db"`
 
 	// AI configuration (organized by provider)
 	AI AIConfig `envPrefix:"AI_"`
@@ -35,42 +34,13 @@ type OllamaConfig struct {
 	Model string `env:"MODEL" envDefault:"codellama:7b-instruct"`
 }
 
-// BedrockAIConfig represents the configuration for AWS Bedrock AI services
-type BedrockAIConfig struct {
-	Region                      string      `env:"REGION" envDefault:"us-east-1"`
-	KnowledgeBaseServiceRoleARN string      `env:"KNOWLEDGE_BASE_SERVICE_ROLE_ARN"`
-	AgentServiceRoleARN         string      `env:"AGENT_SERVICE_ROLE_ARN"`
-	FoundationModel             string      `env:"FOUNDATION_MODEL" envDefault:"amazon.titan-tg1-large"`
-	S3BucketName                string      `env:"S3_BUCKET_NAME"`
-	RDSPostgres                 RDSPostgres `envPrefix:"RDS_POSTGRES_"`
-}
-
 // AIConfig represents the overall AI configuration with provider-specific settings
 type AIConfig struct {
 	// Provider selection (can be overridden per request)
 	DefaultProvider string `env:"DEFAULT_PROVIDER" envDefault:"bedrock"`
 
 	// Provider-specific configurations
-	Ollama  OllamaConfig    `envPrefix:"OLLAMA_"`
-	Bedrock BedrockAIConfig `envPrefix:"BEDROCK_"`
-}
-
-// RDSPostgres represents the configuration for AWS RDS Postgres
-type RDSPostgres struct {
-	CredentialsSecretARN  string `env:"CREDENTIALS_SECRET_ARN"`
-	SchemaEnsureLambdaARN string `env:"SCHEMA_ENSURE_LAMBDA_ARN"`
-	InstanceARN           string `env:"INSTANCE_ARN"`
-	DatabaseName          string `env:"DATABASE_NAME" envDefault:"assistant_db"`
-}
-
-// PostgresConfig represents the configuration for PostgreSQL connection
-type PostgresConfig struct {
-	Host     string `env:"HOST" envDefault:"localhost"`
-	Port     int    `env:"PORT" envDefault:"5432"`
-	Database string `env:"DATABASE" envDefault:"assistant_db"`
-	Username string `env:"USERNAME" envDefault:"postgres"`
-	Password string `env:"PASSWORD"`
-	SSLMode  string `env:"SSL_MODE" envDefault:"disable"`
+	Ollama OllamaConfig `envPrefix:"OLLAMA_"`
 }
 
 // SourcesConfig represents configuration for data sources
