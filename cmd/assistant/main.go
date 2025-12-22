@@ -9,6 +9,7 @@ import (
 
 	"github.com/kazemisoroush/assistant/pkg/config"
 	"github.com/kazemisoroush/assistant/pkg/handler"
+	"github.com/kazemisoroush/assistant/pkg/records/discovery"
 	"github.com/kazemisoroush/assistant/pkg/records/extractor"
 	"github.com/kazemisoroush/assistant/pkg/records/ingestor"
 	"github.com/kazemisoroush/assistant/pkg/records/knowledgebase"
@@ -51,14 +52,34 @@ func main() {
 	// Initialize sources
 	localSource := source.NewLocalSource(extractor, cfg.Sources.Local.BasePath)
 
+	// Initialize discovery service
+	discoveryService := discovery.NewSimpleDiscovery(vectorStorage)
+
 	ctx, cancel := context.WithTimeout(context.Background(), cfg.Timeout)
 	defer cancel()
 
 	switch command {
 	case "scrape":
-		_, _ = handler.NewLocalScraperHandler(recordService, []source.Source{localSource}).Handle(ctx, handler.Request{})
+		hand := handler.NewLocalScraperHandler(recordService, []source.Source{localSource})
+		resp, err := hand.Handle(ctx, handler.Request{
+			Command: "scrape",
+		})
+		if err != nil {
+			slog.Error("Scrape command failed", "error", err)
+			os.Exit(1)
+		}
+		slog.Info("Scrape command completed", "response", resp)
 	case "search":
-		_, _ = handler.NewQueryHandler(recordService).Handle(ctx, handler.Request{})
+		hand := handler.NewSimpleSearchHandler(discoveryService)
+		resp, err := hand.Handle(ctx, handler.Request{
+			Command: "search",
+			Data:    os.Args[2],
+		})
+		if err != nil {
+			slog.Error("Search command failed", "error", err)
+			os.Exit(1)
+		}
+		slog.Info("Search command completed", "response", resp)
 	default:
 		fmt.Fprintf(os.Stderr, "Unknown command: %s\n\n", command)
 		os.Exit(1)

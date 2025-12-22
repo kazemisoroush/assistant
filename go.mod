@@ -5,11 +5,11 @@ go 1.24.1
 require (
 	github.com/aws/aws-sdk-go-v2 v1.41.0
 	github.com/aws/aws-sdk-go-v2/config v1.32.2
-	github.com/kelseyhightower/envconfig v1.4.0
 	go.uber.org/mock v0.6.0
 )
 
 require (
+	github.com/caarlos0/env/v11 v11.3.1
 	github.com/mattn/go-sqlite3 v1.14.32
 	github.com/stretchr/testify v1.9.0
 )

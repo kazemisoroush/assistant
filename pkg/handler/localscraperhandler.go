@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/kazemisoroush/assistant/pkg/records/ingestor"
 	"github.com/kazemisoroush/assistant/pkg/records/source"
@@ -22,6 +23,48 @@ func NewLocalScraperHandler(ingestor ingestor.Ingestor, sources []source.Source)
 }
 
 // Handle implements Handler.
-func (l LocalScraperHandler) Handle(_ context.Context, _ Request) (Response, error) {
-	return Response{}, nil
+func (l LocalScraperHandler) Handle(ctx context.Context, _ Request) (Response, error) {
+	recordCount := 0
+
+	for _, src := range l.sources {
+		recordChan, errChan := src.Scrape(ctx)
+
+		for {
+			select {
+			case record, ok := <-recordChan:
+				if !ok {
+					recordChan = nil
+					continue
+				}
+				if err := l.ingestor.Ingest(ctx, record); err != nil {
+					return Response{
+						Success: false,
+						Errors:  []string{fmt.Sprintf("failed to ingest record from source %s: %v", src.Name(), err)},
+					}, fmt.Errorf("failed to ingest record from source %s: %w", src.Name(), err)
+				}
+				recordCount++
+			case err, ok := <-errChan:
+				if !ok {
+					errChan = nil
+					continue
+				}
+				return Response{
+					Success: false,
+					Errors:  []string{fmt.Sprintf("error while scraping source %s: %v", src.Name(), err)},
+				}, fmt.Errorf("error while scraping source %s: %w", src.Name(), err)
+			}
+
+			if recordChan == nil && errChan == nil {
+				break
+			}
+		}
+	}
+
+	return Response{
+		Success: true,
+		Data: map[string]interface{}{
+			"records_ingested": recordCount,
+			"sources_scraped":  len(l.sources),
+		},
+	}, nil
 }
