@@ -10,6 +10,9 @@ import (
 const (
 	// DefaultSearchLimit is the default maximum number of search results
 	DefaultSearchLimit = 10
+
+	// SimpleSearchCommandType is the command type for simple search operations
+	SimpleSearchCommandType = "search"
 )
 
 // SimpleSearchHandler handles searching for records.
@@ -32,21 +35,21 @@ func (h *SimpleSearchHandler) Handle(ctx context.Context, request Request) (Resp
 		return Response{
 			Success: false,
 			Errors:  []string{"search prompt is required"},
-		}, nil
+		}, fmt.Errorf("search prompt is required")
 	}
 
 	// Perform discovery with default limit
-	discoverReq := discovery.DiscoverRequest{
+	discoverRequest := discovery.DiscoverRequest{
 		Prompt: prompt,
 		Limit:  DefaultSearchLimit,
 	}
 
-	discoverResponse, err := h.discovery.Discover(ctx, discoverReq)
+	discoverResponse, err := h.discovery.Discover(ctx, discoverRequest)
 	if err != nil {
 		return Response{
 			Success: false,
 			Errors:  []string{fmt.Sprintf("search failed: %v", err)},
-		}, err
+		}, fmt.Errorf("search failed: %w", err)
 	}
 
 	// Return successful response with hits

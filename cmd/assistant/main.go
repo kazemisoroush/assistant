@@ -59,20 +59,20 @@ func main() {
 	defer cancel()
 
 	switch command {
-	case "scrape":
+	case handler.ScrapeCommandType:
 		hand := handler.NewLocalScraperHandler(recordService, []source.Source{localSource})
 		resp, err := hand.Handle(ctx, handler.Request{
-			Command: "scrape",
+			Command: handler.ScrapeCommandType,
 		})
 		if err != nil {
 			slog.Error("Scrape command failed", "error", err)
 			os.Exit(1)
 		}
 		slog.Info("Scrape command completed", "response", resp)
-	case "search":
+	case handler.SimpleSearchCommandType:
 		hand := handler.NewSimpleSearchHandler(discoveryService)
 		resp, err := hand.Handle(ctx, handler.Request{
-			Command: "search",
+			Command: handler.SimpleSearchCommandType,
 			Data:    os.Args[2],
 		})
 		if err != nil {

@@ -7,6 +7,7 @@ import "context"
 //
 //go:generate mockgen -destination=./mocks/mock_handler.go -mock_names=Handler=MockHandler -package=mocks . Handler
 type Handler interface {
+	// Handle processes the given request and returns a response or an error.
 	Handle(ctx context.Context, request Request) (Response, error)
 }
 

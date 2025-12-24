@@ -8,6 +8,11 @@ import (
 	"github.com/kazemisoroush/assistant/pkg/records/source"
 )
 
+var (
+	// ScrapeCommandType is the command type for scraping local sources
+	ScrapeCommandType = "scrape"
+)
+
 // LocalScraperHandler handles scraping records from local sources.
 type LocalScraperHandler struct {
 	ingestor ingestor.Ingestor
@@ -62,7 +67,7 @@ func (l LocalScraperHandler) Handle(ctx context.Context, _ Request) (Response, e
 
 	return Response{
 		Success: true,
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"records_ingested": recordCount,
 			"sources_scraped":  len(l.sources),
 		},
